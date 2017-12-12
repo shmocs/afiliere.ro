@@ -40,6 +40,9 @@ if (Yii::$app->controller->action->id === 'login') {
     <?php $this->beginBody() ?>
     <div class="wrapper">
 
+	    <?php
+	    ?>
+	    
         <?= $this->render(
             'header.php',
             ['directoryAsset' => $directoryAsset]
