@@ -8,7 +8,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 
-class ExportController extends Controller
+class PaymentsController extends Controller
 {
 
     /**
@@ -19,11 +19,11 @@ class ExportController extends Controller
     public function actionIndex()
     {
 	    $searchModel = new Sale();
-
+	
 	    $params = Yii::$app->request->get();
-
+	
 	    $dataProvider = $searchModel->search($params);
-
+	
 	    return $this->render(
 		    'index',
 		    [

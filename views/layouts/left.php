@@ -75,7 +75,7 @@
 				    'icon' => 'download',
 				    'url' => '#',
 				    'items' => [
-					    ['label' => 'AdWords', 'icon' => 'share', 'url' => ['/export/index?platform=adwords'],],
+					    ['label' => 'AdWords', 'icon' => 'share', 'url' => ['/payments/index?platform=adwords'],],
 				    ],
 			    ],
 			    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
