@@ -25,57 +25,66 @@
             </div>
         </form>
         <!-- /.search form -->
+	    
 	    <?php
 	    //\yii\helpers\VarDumper::dump(Yii::$app->user);
+	    $menu = [
+		    'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
+		    'items' => [
+			    ['label' => 'Menu', 'options' => ['class' => 'header']],
+			    ['label' => 'Dashboard', 'icon' => 'area-chart', 'url' => ['/']],
+			    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
+			    //['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
+			    [
+				    'label' => 'Some tools',
+				    'icon' => 'gears',
+				    'url' => '#', 'visible' => false,
+				    'items' => [
+					    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
+					    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
+					    [
+						    'label' => 'Level One',
+						    'icon' => 'circle-o',
+						    'url' => '#',
+						    'items' => [
+							    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
+							    [
+								    'label' => 'Level Two',
+								    'icon' => 'circle-o',
+								    'url' => '#',
+								    'items' => [
+									    ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+									    ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
+								    ],
+							    ],
+						    ],
+					    ],
+				    ],
+			    ],
+			    [
+				    'label' => 'Sales',
+				    'icon' => 'dollar',
+				    'url' => '#',
+				    'items' => [
+					    ['label' => '2Performant', 'icon' => 'share', 'url' => ['/sales/index?platform=2performant'],],
+					    ['label' => 'ProfitShare', 'icon' => 'share', 'url' => ['/sales/index?platform=profitshare'],],
+				    ],
+			    ],
+			    [
+				    'label' => 'Export',
+				    'icon' => 'download',
+				    'url' => '#',
+				    'items' => [
+					    ['label' => 'AdWords', 'icon' => 'share', 'url' => ['/export/index?platform=adwords'],],
+				    ],
+			    ],
+			    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
+			    ['label' => 'Logout' . ' ('.Yii::$app->user->identity->username.')', 'icon' => 'power-off', 'url' => ['site/logout'], 'visible' => !Yii::$app->user->isGuest],
+		    ],
+	    ];
+	    echo dmstr\widgets\Menu::widget($menu)
+	    
 	    ?>
-        <?= dmstr\widgets\Menu::widget(
-            [
-                'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
-                'items' => [
-                    ['label' => 'Menu', 'options' => ['class' => 'header']],
-                    ['label' => 'Dashboard', 'icon' => 'area-chart', 'url' => ['/']],
-                    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
-                    //['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
-                    [
-                        'label' => 'Some tools',
-                        'icon' => 'gears',
-                        'url' => '#', 'visible' => false,
-                        'items' => [
-                            ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
-                            ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
-                            [
-                                'label' => 'Level One',
-                                'icon' => 'circle-o',
-                                'url' => '#',
-                                'items' => [
-                                    ['label' => 'Level Two', 'icon' => 'circle-o', 'url' => '#',],
-                                    [
-                                        'label' => 'Level Two',
-                                        'icon' => 'circle-o',
-                                        'url' => '#',
-                                        'items' => [
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                            ['label' => 'Level Three', 'icon' => 'circle-o', 'url' => '#',],
-                                        ],
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-	                [
-		                'label' => 'Import',
-		                'icon' => 'share',
-		                'url' => '#',
-		                'items' => [
-			                ['label' => '2Performant', 'icon' => 'dollar', 'url' => ['/gii'],],
-			                ['label' => 'ProfitShare', 'icon' => 'dollar', 'url' => ['/debug'],],
-		                ],
-	                ],
-	                ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],
-	                ['label' => 'Logout' . ' ('.Yii::$app->user->identity->username.')', 'icon' => 'power-off', 'url' => ['site/logout'], 'visible' => !Yii::$app->user->isGuest],
-                ],
-            ]
-        ) ?>
 
     </section>
 
