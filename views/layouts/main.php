@@ -22,9 +22,13 @@ if (Yii::$app->controller->action->id === 'login') {
         app\assets\AppAsset::register($this);
     }
 
-    dmstr\web\AdminLteAsset::register($this);
+    require Yii::getAlias('@app') . '/lib/helpers.php';
+    
+    require Yii::getAlias('@app') . '/assets/AdminLteBowerAsset.php';
+    app\assets\AdminLteBowerAsset::register($this);
 
     $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
+	
     ?>
     <?php $this->beginPage() ?>
     <!DOCTYPE html>
@@ -34,6 +38,9 @@ if (Yii::$app->controller->action->id === 'login') {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
+	
+	    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+	    
         <?php $this->head() ?>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
@@ -62,6 +69,7 @@ if (Yii::$app->controller->action->id === 'login') {
     </div>
 
     <?php $this->endBody() ?>
+    
     </body>
     </html>
     <?php $this->endPage() ?>

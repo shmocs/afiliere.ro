@@ -28,6 +28,7 @@
 	    
 	    <?php
 	    //\yii\helpers\VarDumper::dump(Yii::$app->user);
+
 	    $menu = [
 		    'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
 		    'items' => [
@@ -64,7 +65,10 @@
 			    [
 				    'label' => 'Sales',
 				    'icon' => 'dollar',
-				    'url' => '#',
+				    'url' => '/sales/index',
+				    'options' => [
+				        'class' => 'menu-open',
+					],
 				    'items' => [
 					    ['label' => '2Performant', 'icon' => 'share', 'url' => ['/sales/index?platform=2performant'],],
 					    ['label' => 'ProfitShare', 'icon' => 'share', 'url' => ['/sales/index?platform=profitshare'],],
