@@ -9,7 +9,8 @@ class m171212_030600_init extends Migration
 		if ($this->db->driverName === 'mysql') {
 			$tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
 		}
-		
+
+//ProfitShare
 		//  Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Tip comision","Cantitate produse",
 		//  "Valoarea Comision Aprobat","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie",
 		//  "Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
@@ -17,7 +18,7 @@ class m171212_030600_init extends Migration
 		//  Libris.ro,C7LP-1008089150,"2017-11-27 13:41:43","2017-11-18 01:58:21","In asteptare","Comision comanda",1,0.00,3.71,37.14,"In asteptare",http://pmark.ro/lib1/https://www.libris.ro/metro-2034-9781473204300--p857267.html?gclid=EAIaIQobChMIpLG7lOjG1wIVhD8bCh0TfgJFEAAYASAAEgJCb_D_BwE,"9 zile",link,Libris.ro,mobile,Android,6.0,Huawei,"Honor 5X","Chrome Mobile"
 		
 		
-		
+//2Performant
 		//  ID,Program,Program Status,Affiliate,Commission type,Commission Amount (EUR),Commission Amount (RON),
 		//  Status,Sale Amount (EUR),Sale Amount (RON),Description,Transaction Date,Transaction IP,Click Date,Click IP,
 		//  Click Referrer,Click Redirect,Device Type,Click Tag,Initial Commission Amount,Comments
@@ -36,6 +37,7 @@ Valoarea Comisionului	in PS este coloana “Valoare Comision Inregistrat” daca
 Refferer	in PS este coloana “Refferer/Cautare” , in 2P este coloana “Click Referrer”
 Status	in PS este coloana “Status” , in 2P este coloana “Status”
 		 */
+	
 		
 		// create tables. note the specific order
 		$this->createTable('{{%sale}}', [
@@ -44,7 +46,7 @@ Status	in PS este coloana “Status” , in 2P este coloana “Status”
 			'advertiser' => Schema::TYPE_STRING . ' not null',
 			'click_date' => Schema::TYPE_DATETIME . ' not null',
 			'conversion_date' => Schema::TYPE_DATETIME . ' not null',
-			'amount' =>  Schema::TYPE_DECIMAL . ' not null',
+			'amount' =>  Schema::TYPE_DECIMAL.'(10, 2)' . ' not null',
 			'referrer' => Schema::TYPE_STRING . ' not null',
 			'status' => Schema::TYPE_STRING . ' not null',
 			'created_at' => Schema::TYPE_DATETIME . ' not null',

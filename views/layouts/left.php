@@ -28,7 +28,7 @@
 	    
 	    <?php
 	    //\yii\helpers\VarDumper::dump(Yii::$app->user);
-	    \yii\helpers\VarDumper::dump(Yii::$app->controller->id);
+	    //\yii\helpers\VarDumper::dump(Yii::$app->controller->id);
 
 	    $menu = [
 		    'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
@@ -67,13 +67,16 @@
 				    'label' => 'Sales',
 				    'icon' => 'dollar',
 				    'url' => '/sales/index',
+				    
 				    'options' => [
-				        'class' => (Yii::$app->controller->id == 'sales') ? 'menu-open active' : '',
+				        'class' => (Yii::$app->controller->id == 'sales') ? 'active' : '',
 					],
-				    'items' => [
-					    ['label' => '2Performant', 'icon' => 'share', 'url' => ['/sales/index?platform=2performant'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == '2performant') ? 'active' : ''],],
-					    ['label' => 'ProfitShare', 'icon' => 'share', 'url' => ['/sales/index?platform=profitshare'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'profitshare') ? 'active' : ''],],
-				    ],
+				    /*
+					'items' => [
+						['label' => '2Performant', 'icon' => '', 'url' => ['/sales/index?platform=2performant'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == '2performant') ? 'active' : ''],],
+						['label' => 'ProfitShare', 'icon' => '', 'url' => ['/sales/index?platform=profitshare'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'profitshare') ? 'active' : ''],],
+					],
+					*/
 			    ],
 			    [
 				    'label' => 'Export',
@@ -83,7 +86,7 @@
 					    'class' => (Yii::$app->controller->id == 'payments') ? 'menu-open active' : '',
 				    ],
 				    'items' => [
-					    ['label' => 'AdWords', 'icon' => 'share', 'url' => ['/payments/index?platform=adwords'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'adwords') ? 'active' : ''],],
+					    ['label' => 'AdWords', 'icon' => '', 'url' => ['/payments/index?platform=adwords'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'adwords') ? 'active' : ''],],
 				    ],
 			    ],
 			    ['label' => 'Login', 'url' => ['site/login'], 'visible' => Yii::$app->user->isGuest],

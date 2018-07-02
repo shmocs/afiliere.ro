@@ -5,6 +5,7 @@ namespace app\controllers;
 use app\models\Sale;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -23,6 +24,8 @@ class SalesController extends Controller
 	    $params = Yii::$app->request->get();
 	
 	    $dataProvider = $searchModel->search($params);
+	    
+	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
 	
 	    return $this->render(
 		    'index',
