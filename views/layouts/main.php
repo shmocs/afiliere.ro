@@ -22,8 +22,6 @@ if (Yii::$app->controller->action->id === 'login') {
         app\assets\AppAsset::register($this);
     }
 
-    require Yii::getAlias('@app') . '/lib/helpers.php';
-    
     require Yii::getAlias('@app') . '/assets/AdminLteBowerAsset.php';
     app\assets\AdminLteBowerAsset::register($this);
 

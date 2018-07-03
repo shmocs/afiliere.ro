@@ -70,7 +70,7 @@ class Sale extends \yii\db\ActiveRecord
 			[
 				'query' => $query,
 				'pagination' => [
-					'pageSize' => 10,
+					'pageSize' => 2,
 				],
 			]
 		);
@@ -82,14 +82,14 @@ class Sale extends \yii\db\ActiveRecord
 		// 'platform', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'
 		
 		$query->andFilterWhere(['id' => $this->id]);
-		$query->andFilterWhere(['platform' => $this->channel]);
-		$query->andFilterWhere(['advertiser' => $this->idcountry]);
-		$query->andFilterWhere(['click_date' => $this->user_id]);
-		$query->andFilterWhere(['conversion_date' => $this->priority]);
-		$query->andFilterWhere(['amount', $this->from]);
-		$query->andFilterWhere(['like', 'referrer', $this->from]);
-		$query->andFilterWhere(['status', $this->from]);
-		$query->andFilterWhere(['created_at', $this->from]);
+		$query->andFilterWhere(['like', 'platform', $this->platform]);
+		$query->andFilterWhere(['like', 'advertiser', $this->advertiser]);
+		$query->andFilterWhere(['click_date' => $this->click_date]);
+		$query->andFilterWhere(['conversion_date' => $this->conversion_date]);
+		$query->andFilterWhere(['amount' => $this->amount]);
+		$query->andFilterWhere(['like', 'referrer', $this->referrer]);
+		$query->andFilterWhere(['status' => $this->status]);
+		$query->andFilterWhere(['created_at' => $this->created_at]);
 		
 		return $dataProvider;
 	}
