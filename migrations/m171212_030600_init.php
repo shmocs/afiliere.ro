@@ -16,7 +16,8 @@ class m171212_030600_init extends Migration
 		//  "Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
 		
 		//  Libris.ro,C7LP-1008089150,"2017-11-27 13:41:43","2017-11-18 01:58:21","In asteptare","Comision comanda",1,0.00,3.71,37.14,"In asteptare",http://pmark.ro/lib1/https://www.libris.ro/metro-2034-9781473204300--p857267.html?gclid=EAIaIQobChMIpLG7lOjG1wIVhD8bCh0TfgJFEAAYASAAEgJCb_D_BwE,"9 zile",link,Libris.ro,mobile,Android,6.0,Huawei,"Honor 5X","Chrome Mobile"
-		
+        
+        // INSERT INTO `sale` (`id`, `platform`, `advertiser`, `click_date`, `conversion_date`, `amount`, `referrer`, `status`, `created_at`) VALUES (NULL, 'ProfitShare', 'Libris.ro', '2017-11-18 01:58:21', '2017-11-27 13:41:43', '3.71', 'http://pmark.ro/lib1/https://www.libris.ro/metro-2034-9781473204300--p857267.html?gclid=EAIaIQobChMIpLG7lOjG1wIVhD8bCh0TfgJFEAAYASAAEgJCb_D_BwE', 'In asteptare', NOW());
 		
 //2Performant
 		//  ID,Program,Program Status,Affiliate,Commission type,Commission Amount (EUR),Commission Amount (RON),
@@ -27,7 +28,8 @@ class m171212_030600_init extends Migration
 		//  "Baterie auto ROMBAT CYCLON 12V 62AH, 510A x 1 | ULEI MOTOR CASTROL MAGNATEC DIESEL B4 10W40 5L x 3 | ULEI MOTOR CASTROL EDGE TITANIUM TURBO DIESEL 5W40 1L x 3",
 		//  2017-11-01 06:57:28 UTC,89.47.217.113,2017-10-04 08:07:09 UTC,89.47.217.113,http://pmark.ro/piesa/https://www.epiesa.ro/lichid-de-parbriz/acc/?gclid=Cj0KCQjwjdLOBRCkAR,
 		//  https://www.epiesa.ro/lichid-de-parbriz/acc/?utm_campaign=2Performant&utm_source=daf68ddfd&utm_medium=CPS,Desktop,epiesa,5.38,
-		
+        
+        // INSERT INTO `sale` (`id`, `platform`, `advertiser`, `click_date`, `conversion_date`, `amount`, `referrer`, `status`, `created_at`) VALUES (NULL, '2Performant', 'epiesa.ro', '2017-10-04 08:07:09', '2017-11-01 06:57:28', '24.75', 'http://pmark.ro/piesa/https://www.epiesa.ro/lichid-de-parbriz/acc/?gclid=Cj0KCQjwjdLOBRCkAR', 'accepted', NOW());
 		
 		/*
 Advertiser	in PS este coloana “Advertiser” , in 2P este coloana “Program”

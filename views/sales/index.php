@@ -37,7 +37,7 @@ use yii\grid\GridView;
 							<tr>
 								<th style="width: 20px;">ID</th>
 								<th style="width: 50px;">Platforma</th>
-								<th style="width: 400px;">Advertiser</th>
+								<th style="width: 200px;">Advertiser</th>
 								<th style="width: 120px;">Data Click</th>
 								<th style="width: 120px;">Data Conversie</th>
 								<th style="width: 60px; text-align: right;">Comision</th>
@@ -57,7 +57,7 @@ use yii\grid\GridView;
 										<td><?=$row->click_date;?></td>
 										<td><?=$row->conversion_date;?></td>
 										<td style="text-align: right;"><?=$row->amount;?></td>
-										<td><div style="overflow-x: scroll; width: 300px; white-space: nowrap;"><?=$row->referrer;?></div></td>
+										<td><div style="overflow-x: scroll; width: 600px; white-space: nowrap;"><?=$row->referrer;?></div></td>
 										<td style="text-align: center;"><?=$row->status;?></td>
 									</tr>
 									<?php
