@@ -37,7 +37,7 @@ class Sale extends \yii\db\ActiveRecord
     {
         return [
             [['platform', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'], 'required'],
-            [['click_date', 'conversion_date', 'created_at'], 'safe'],
+            [['id', 'click_date', 'conversion_date', 'created_at'], 'safe'],
             [['amount'], 'number'],
             [['platform', 'advertiser', 'referrer', 'status'], 'string', 'max' => 255],
         ];

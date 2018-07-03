@@ -5,30 +5,47 @@ use yii\helpers\Url;
 //use yii\grid\GridView;
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
+use app\models\Sale;
+use yii\helpers\ArrayHelper;
 
 //$this->registerJs('/js/sales.js'); => <script type="text/javascript">jQuery(function ($) {/js/sales.js});</script>
 
 //VarDumper::dump($_SERVER, 10, true);
 
 $gridColumns = [
+//	[
+//	    'class' => 'kartik\grid\SerialColumn',
+//	    'width' => '25px',
+//	],
 	[
-	    'class' => 'kartik\grid\SerialColumn',
-	    'contentOptions' => ['class' => 'kartik-sheet-style'],
-	    'width' => '50px',
-	    'header' => '',
-	    'headerOptions' => ['class' => 'kartik-sheet-style']
+	    'attribute' => 'id',
+	    'hAlign' => 'center',
+	    'vAlign' => 'middle',
+	    'width' => '4%',
 	],
 	[
 	    'attribute' => 'platform',
+		'hAlign' => 'center',
 	    'vAlign' => 'middle',
 	    'width' => '7%',
+		'value' => function ($model, $key, $index, $widget) {
+			return Html::a($model->platform,
+				'#',
+				['title' => 'Filtrare dupa platforma', 'onclick' => 'alert("Filtrare dupa platforma!")']);
+		},
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Sale::find()->orderBy('platform')->asArray()->all(), 'platform', 'platform'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'any'],
+		'format' => 'raw'
 	],
 	[
 	    'attribute' => 'advertiser',
 	    'vAlign' => 'middle',
-	    'width' => '20%',
+	    'width' => '100px',
 	],
-	//'platform', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'
 	[
 	    'attribute' => 'click_date',
 	    'hAlign' => 'center',
@@ -45,25 +62,44 @@ $gridColumns = [
 	    'attribute' => 'amount',
 	    'hAlign' => 'right',
 	    'vAlign' => 'middle',
-	    'width' => '7%',
+	    'width' => '5%',
 	    'pageSummary' => true
 	],
 	[
 	    'attribute' => 'referrer',
 	    'vAlign' => 'middle',
-	    'width' => '20%',
+		'value' => function ($model, $key, $index, $widget) {
+			return '<div style="overflow-x: scroll; width: 100%; max-width: 300px; white-space: nowrap;">'.$model->referrer.'</div>';
+		},
+		'format' => 'raw',
 	],
+//	[
+//	    'attribute' => 'import_file_id',
+//	    'vAlign' => 'middle',
+//		'value' => function ($model, $key, $index, $widget) {
+//			return Html::a($model->import_file_id,
+//				'#',
+//				['title' => 'Filtrare fisier', 'onclick' => 'alert("Filtrare dupa fisier!")']);
+//		},
+//		'format' => 'raw',
+//	],
 	[
 	    'attribute' => 'status',
 	    'hAlign' => 'center',
 	    'vAlign' => 'middle',
-	    'width' => '10%',
+	    'width' => '7%',
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Sale::find()->orderBy('status')->asArray()->all(), 'status', 'status'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'any'],
 	],
 	[
 	    'attribute' => 'created_at',
-	    'hAlign' => 'right',
+	    'hAlign' => 'center',
 	    'vAlign' => 'middle',
-	    'width' => '70',
+	    'width' => '10%',
 	],
 ];
 
@@ -94,6 +130,7 @@ echo GridView::widget([
 	
 	'responsive'=>true,
 	'hover'=>true,
+	
 	'pjax'=>true,
 	'pjaxSettings'=>[
 		'neverTimeout'=>true,
@@ -102,7 +139,7 @@ echo GridView::widget([
 	],
     'floatHeader'=>false,
     'floatHeaderOptions'=>['scrollingTop'=>'50'],
-    'showPageSummary' => true,
+    'showPageSummary' => false,
     'toolbar' => [
         [
             'content'=>
@@ -124,7 +161,7 @@ echo GridView::widget([
     'panel' => [
         'type' => GridView::TYPE_ACTIVE,
         'heading' => '<i class="fa fa-dollar"></i>  Sales',
-        'before' => '<div style="padding-top: 7px;"><em>* Resize table columns just like a spreadsheet by dragging the column edges.</em></div>',
+        '_before' => '<div style="padding-top: 7px;"><em>* Resize table columns just like a spreadsheet by dragging the column edges.</em></div>',
     ],
 	
 	'export' => [

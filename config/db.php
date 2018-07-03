@@ -3,8 +3,8 @@
 return [
     'class' => 'yii\db\Connection',
     'dsn' => 'mysql:host=127.0.0.1;dbname=marketing_charts',
-    'username' => 'root',
-    'password' => 'root',
+    'username' => 'affil',
+    'password' => 'affil',
     'charset' => 'utf8',
 
     // Schema cache options (for production environment)
