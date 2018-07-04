@@ -37,11 +37,18 @@ class Sale extends \yii\db\ActiveRecord
     {
         return [
             [['platform', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'], 'required'],
-            [['id', 'click_date', 'conversion_date', 'created_at'], 'safe'],
+            [['id', 'click_date', 'conversion_date', 'created_at', 'import_id'], 'safe'],
             [['amount'], 'number'],
             [['platform', 'advertiser', 'referrer', 'status'], 'string', 'max' => 255],
         ];
     }
+	
+	public function getImport() {
+		return $this->hasOne(
+			\app\models\Import::className(),
+			['id' => 'import_id']
+		);
+	}
 
     /**
      * @inheritdoc
@@ -58,6 +65,7 @@ class Sale extends \yii\db\ActiveRecord
             'referrer' => 'Referrer',
             'status' => 'Status',
             'created_at' => 'Created At',
+            'import_id' => 'Import File',
         ];
     }
 	

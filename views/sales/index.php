@@ -6,6 +6,7 @@ use yii\helpers\Url;
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
 use app\models\Sale;
+use app\models\Import;
 use yii\helpers\ArrayHelper;
 
 //$this->registerJs('/js/sales.js'); => <script type="text/javascript">jQuery(function ($) {/js/sales.js});</script>
@@ -69,20 +70,10 @@ $gridColumns = [
 	    'attribute' => 'referrer',
 	    'vAlign' => 'middle',
 		'value' => function ($model, $key, $index, $widget) {
-			return '<div style="overflow-x: scroll; width: 100%; max-width: 300px; white-space: nowrap;">'.$model->referrer.'</div>';
+			return '<div style="overflow-x: scroll; width: 100%; max-width: 350px; white-space: nowrap;">'.$model->referrer.'</div>';
 		},
 		'format' => 'raw',
 	],
-//	[
-//	    'attribute' => 'import_file_id',
-//	    'vAlign' => 'middle',
-//		'value' => function ($model, $key, $index, $widget) {
-//			return Html::a($model->import_file_id,
-//				'#',
-//				['title' => 'Filtrare fisier', 'onclick' => 'alert("Filtrare dupa fisier!")']);
-//		},
-//		'format' => 'raw',
-//	],
 	[
 	    'attribute' => 'status',
 	    'hAlign' => 'center',
@@ -100,6 +91,23 @@ $gridColumns = [
 	    'hAlign' => 'center',
 	    'vAlign' => 'middle',
 	    'width' => '10%',
+	],
+	[
+		'attribute' => 'import_id',
+		'vAlign' => 'middle',
+		'value' => function ($model, $key, $index, $widget) {
+			$a = Html::a($model->import->filename,
+				'index?Sale[import_id]='.$model->import_id,
+				['title' => 'Filtrare fisier', 'onclick' => 'alert("Filtrare dupa fisier!")']);
+			return '<div style="overflow-x: auto; width: 100%; max-width: 300px; white-space: nowrap;">'.$a.'</div>';
+		},
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Import::find()->orderBy('created_at DESC')->asArray()->all(), 'id', 'filename'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'all'],
+		'format' => 'raw',
 	],
 ];
 
