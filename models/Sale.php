@@ -4,7 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\data\ActiveDataProvider;
-
+use yii\helpers\VarDumper;
 
 
 /**
@@ -29,7 +29,7 @@ class Sale extends \yii\db\ActiveRecord
     {
         return 'sale';
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -40,6 +40,7 @@ class Sale extends \yii\db\ActiveRecord
             [['id', 'click_date', 'conversion_date', 'created_at', 'import_id'], 'safe'],
             [['amount'], 'number'],
             [['platform', 'advertiser', 'referrer', 'status'], 'string', 'max' => 255],
+	        [['conversion_date'], 'match', 'pattern' => '/^.+\s\-\s.+$/'],
         ];
     }
 	
@@ -93,11 +94,21 @@ class Sale extends \yii\db\ActiveRecord
 		$query->andFilterWhere(['like', 'platform', $this->platform]);
 		$query->andFilterWhere(['like', 'advertiser', $this->advertiser]);
 		$query->andFilterWhere(['click_date' => $this->click_date]);
-		$query->andFilterWhere(['conversion_date' => $this->conversion_date]);
+		//$query->andFilterWhere(['conversion_date' => $this->conversion_date]);
 		$query->andFilterWhere(['amount' => $this->amount]);
 		$query->andFilterWhere(['like', 'referrer', $this->referrer]);
 		$query->andFilterWhere(['status' => $this->status]);
 		$query->andFilterWhere(['created_at' => $this->created_at]);
+		
+		
+		if( isset($this->conversion_date) && $this->conversion_date != '') {
+			$date_explode = explode(" - ",$this->conversion_date);
+			$date1 = trim($date_explode[0]);
+			$date2 = trim($date_explode[1]);
+			$query->andFilterWhere(['between', 'conversion_date', $date1, $date2]);
+		}
+		
+		//VarDumper::dump($query->createCommand()->getRawSql(), 10, true);
 		
 		return $dataProvider;
 	}

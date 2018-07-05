@@ -2,7 +2,7 @@
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-//use yii\grid\GridView;
+
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
 use app\models\Sale;
@@ -14,10 +14,6 @@ use yii\helpers\ArrayHelper;
 //VarDumper::dump($_SERVER, 10, true);
 
 $gridColumns = [
-//	[
-//	    'class' => 'kartik\grid\SerialColumn',
-//	    'width' => '25px',
-//	],
 	[
 	    'attribute' => 'id',
 	    'hAlign' => 'center',
@@ -57,7 +53,19 @@ $gridColumns = [
 	    'attribute' => 'conversion_date',
 	    'hAlign' => 'center',
 	    'vAlign' => 'middle',
-	    'width' => '10%',
+	    'width' => '220px',
+		'filterType' => GridView::FILTER_DATE_RANGE,
+		'filterWidgetOptions' => [
+			'presetDropdown'=>true,
+			'pluginOptions' => [
+				'opens'=>'right',
+				'locale' => [
+					'cancelLabel' => 'Clear',
+					'format' => 'YYYY-MM-DD',
+				]
+			],
+		],
+		
 	],
 	[
 	    'attribute' => 'amount',
@@ -70,7 +78,7 @@ $gridColumns = [
 	    'attribute' => 'referrer',
 	    'vAlign' => 'middle',
 		'value' => function ($model, $key, $index, $widget) {
-			return '<div style="overflow-x: scroll; width: 100%; max-width: 350px; white-space: nowrap;">'.$model->referrer.'</div>';
+			return '<div style="overflow-x: scroll; width: 100%; max-width: 390px; white-space: nowrap;">'.$model->referrer.'</div>';
 		},
 		'format' => 'raw',
 	],
@@ -191,7 +199,7 @@ echo GridView::widget([
 
 
 
-<div class="content-wrapper2">
+<div class="content-wrapper2 hide">
 	<!-- Content Header (Page header) -->
 	<section class="content-header">
 		<h1>
