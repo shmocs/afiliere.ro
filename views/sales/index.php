@@ -5,6 +5,7 @@ use yii\helpers\Url;
 
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
+use kartik\export\ExportMenu;
 use app\models\Sale;
 use app\models\Import;
 use yii\helpers\ArrayHelper;
@@ -13,111 +14,6 @@ use yii\helpers\ArrayHelper;
 
 //VarDumper::dump($_SERVER, 10, true);
 
-$gridColumns = [
-	[
-	    'attribute' => 'id',
-	    'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '4%',
-	],
-	[
-	    'attribute' => 'platform',
-		'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '7%',
-		'value' => function ($model, $key, $index, $widget) {
-			return Html::a($model->platform,
-				'#',
-				['title' => 'Filtrare dupa platforma', 'onclick' => 'alert("Filtrare dupa platforma!")']);
-		},
-		'filterType' => GridView::FILTER_SELECT2,
-		'filter' => ArrayHelper::map(Sale::find()->orderBy('platform')->asArray()->all(), 'platform', 'platform'),
-		'filterWidgetOptions' => [
-			'pluginOptions' => ['allowClear' => true],
-		],
-		'filterInputOptions' => ['placeholder' => 'any'],
-		'format' => 'raw'
-	],
-	[
-	    'attribute' => 'advertiser',
-	    'vAlign' => 'middle',
-	    'width' => '100px',
-	],
-	[
-	    'attribute' => 'click_date',
-	    'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '10%',
-	],
-	[
-	    'attribute' => 'conversion_date',
-	    'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '220px',
-		'filterType' => GridView::FILTER_DATE_RANGE,
-		'filterWidgetOptions' => [
-			'presetDropdown'=>true,
-			'pluginOptions' => [
-				'opens'=>'right',
-				'locale' => [
-					'cancelLabel' => 'Clear',
-					'format' => 'YYYY-MM-DD',
-				]
-			],
-		],
-		
-	],
-	[
-	    'attribute' => 'amount',
-	    'hAlign' => 'right',
-	    'vAlign' => 'middle',
-	    'width' => '5%',
-	    'pageSummary' => true
-	],
-	[
-	    'attribute' => 'referrer',
-	    'vAlign' => 'middle',
-		'value' => function ($model, $key, $index, $widget) {
-			return '<div style="overflow-x: scroll; width: 100%; max-width: 390px; white-space: nowrap;">'.$model->referrer.'</div>';
-		},
-		'format' => 'raw',
-	],
-	[
-	    'attribute' => 'status',
-	    'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '7%',
-		'filterType' => GridView::FILTER_SELECT2,
-		'filter' => ArrayHelper::map(Sale::find()->orderBy('status')->asArray()->all(), 'status', 'status'),
-		'filterWidgetOptions' => [
-			'pluginOptions' => ['allowClear' => true],
-		],
-		'filterInputOptions' => ['placeholder' => 'any'],
-	],
-	[
-	    'attribute' => 'created_at',
-	    'hAlign' => 'center',
-	    'vAlign' => 'middle',
-	    'width' => '10%',
-	],
-	[
-		'attribute' => 'import_id',
-		'vAlign' => 'middle',
-		'value' => function ($model, $key, $index, $widget) {
-			$a = Html::a($model->import->filename,
-				'index?Sale[import_id]='.$model->import_id,
-				['title' => 'Filtrare fisier', 'onclick' => 'alert("Filtrare dupa fisier!")']);
-			return '<div style="overflow-x: auto; width: 100%; max-width: 300px; white-space: nowrap;">'.$a.'</div>';
-		},
-		'filterType' => GridView::FILTER_SELECT2,
-		'filter' => ArrayHelper::map(Import::find()->orderBy('created_at DESC')->asArray()->all(), 'id', 'filename'),
-		'filterWidgetOptions' => [
-			'pluginOptions' => ['allowClear' => true],
-		],
-		'filterInputOptions' => ['placeholder' => 'all'],
-		'format' => 'raw',
-	],
-];
 
 ?>
 
@@ -135,11 +31,38 @@ $gridColumns = [
 				
 <?php
 
+
+$fullExportMenu = ExportMenu::widget([
+	'dataProvider' => $dataProvider,
+	'columns' => $searchModel->getExportColumns(),
+	'target' => ExportMenu::TARGET_SELF,
+	'fontAwesome' => true,
+	'showConfirmAlert' => true,
+	'showColumnSelector' => true,
+	'dropdownOptions' => [
+		'label' => 'Export',
+		'class' => 'btn btn-default',
+	],
+	
+	'exportConfig' => [
+		ExportMenu::FORMAT_CSV => [
+			'label' => 'Save as CSV',
+			'icon' => 'file-excel-o',
+			'alertMsg' => 'The CSV export file will be generated for download.',
+		],
+		ExportMenu::FORMAT_TEXT => false,
+		//ExportMenu::FORMAT_PDF => false,
+		ExportMenu::FORMAT_HTML => false,
+		ExportMenu::FORMAT_EXCEL => false,
+		ExportMenu::FORMAT_EXCEL_X => false,
+	],
+]);
+
 // Generate a bootstrap responsive striped table with row highlighted on hover
 echo GridView::widget([
 	'dataProvider'=> $dataProvider,
 	'filterModel' => $searchModel,
-	'columns' => $gridColumns,
+	'columns' => $searchModel->getGridColumns(),
 	
 	'resizableColumns'=>false,
 	'resizeStorageKey'=>Yii::$app->user->id . '-' . date("m"),
@@ -169,7 +92,8 @@ echo GridView::widget([
                     'title' => 'Reset Grid',
                 ]),
         ],
-        '{export}',
+        //'{export}',
+	    $fullExportMenu,
         '{toggleData}'
     ],
 
