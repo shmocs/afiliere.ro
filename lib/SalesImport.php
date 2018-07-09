@@ -19,6 +19,8 @@ class SalesImport
 	
 	public $platform = '';
 	
+	public $messages = [];
+	
 	public $parsed_rows = [];
 	public $imported_rows = [];
 	public $duplicate_rows = [];
@@ -31,12 +33,8 @@ class SalesImport
 	
 	public function __construct($filename)
 	{
-		$result = [
-			'type' => 'success',
-			'messages' => [
-			    'Processing file ['.$filename.']'
-            ],
-		];
+		$result = [];
+		$this->messages[] = 'Processing file ['.$filename.']';
 		
         $this->filepath = \Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename;
 		
@@ -55,19 +53,18 @@ class SalesImport
 				$to_import = $this->analyze_rows(); //populate parsed_rows, duplicate_rows
 				$this->import_rows($to_import); //populate imported_rows
 				
-				$result['type'] = 'success';
 				$result['_platform'] = $this->platform;
 				$result['_parsed'] = count($this->parsed_rows);
 				$result['_imported'] = count($this->imported_rows);
 				$result['_duplicates'] = count($this->duplicate_rows);
 				$result['_failed'] = count($this->failed_rows);
 				$result['_stats'] = '
-                    Imported from
-                    <strong><span id="first_record">'.$this->first_record.'</span></strong>
-                    to
-                    <strong><span id="last_record">'.$this->last_record.'</span></strong>
-                    .
+                    Imported from <strong>'.$this->first_record.'</strong>
+                    to <strong>'.$this->last_record.'</strong>.
 				';
+				$result['messages'] = $this->messages;
+                
+                $result['type'] = $result['_failed'] > 0 ? 'error' : ($result['_duplicates'] > 0 ? 'warning' : 'success');
 
 			} else {
 				$result['type'] = 'error';
@@ -117,7 +114,9 @@ class SalesImport
 		foreach ($lines as $line) {
 			if (empty(trim($line))) continue;
 			
-			$columns = explode(',', $line);
+			// sanitize "word1, word2" columns
+			$columns = str_getcsv($line);
+			
 			//ID,Program,Program Status,Affiliate,Commission type,Commission Amount (EUR),Commission Amount (RON),Status,Sale Amount (EUR),Sale Amount (RON),Description,Transaction Date,Transaction IP,Click Date,Click IP,Click Referrer,Click Redirect,Device Type,Click Tag,Initial Commission Amount,Comments
 			
 			$row = [
@@ -143,8 +142,10 @@ class SalesImport
 		
 		foreach ($lines as $line) {
 			if (empty(trim($line))) continue;
-			
-			$columns = explode(',', $line);
+            
+            // sanitize "word1, word2" columns
+            $columns = str_getcsv($line);
+            
 			//Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
 			
 			$row = [
@@ -170,6 +171,13 @@ class SalesImport
 	    
         foreach ($this->parsed_rows as $record) {
     
+            if ($record['conversion_date'] < $this->first_record || $this->first_record == '0') {
+                $this->first_record = $record['conversion_date'];
+            }
+            if ($record['conversion_date'] > $this->last_record) {
+                $this->last_record = $record['conversion_date'];
+            }
+            
             $params = [
                 ':platform' => $record['platform'],
                 ':advertiser' => $record['advertiser'],
@@ -180,17 +188,22 @@ class SalesImport
                 ':status' => $record['status'],
             ];
             
-            $sale = Yii::$app->db->createCommand('SELECT * FROM sale WHERE
-                platform=:platform AND
-                advertiser=:advertiser AND
-                click_date=:click_date AND
-                conversion_date=:conversion_date AND
-                amount=:amount AND
-                referrer=:referrer AND
-                status=:status
-            ')
-                ->bindValues($params)
-                ->queryOne();
+            try {
+                $sale = Yii::$app->db->createCommand('SELECT * FROM sale WHERE
+                    platform=:platform AND
+                    advertiser=:advertiser AND
+                    click_date=:click_date AND
+                    conversion_date=:conversion_date AND
+                    amount=:amount AND
+                    referrer=:referrer AND
+                    status=:status
+                ')
+                    ->bindValues($params)
+                    ->queryOne();
+                
+            } catch (Exception $e) {
+                $this->messages[] = $e->getMessage();
+            }
             
             if ($sale) {
                 $this->duplicate_rows[] = $record;
@@ -208,13 +221,6 @@ class SalesImport
 		
 	    foreach ($new_records as $record) {
 	        
-	        if ($record['conversion_date'] < $this->first_record) {
-                $this->first_record = $record['conversion_date'];
-            }
-	        if ($record['conversion_date'] > $this->last_record) {
-                $this->last_record = $record['conversion_date'];
-            }
-        
             try {
 	            
                 Yii::$app->db->createCommand()->insert('sale', [
@@ -231,6 +237,7 @@ class SalesImport
                 
             } catch (Exception $e) {
 	            $this->failed_rows[] = $record;
+                $this->messages[] = $e->getMessage();
             }
             
         }

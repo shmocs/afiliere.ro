@@ -143,13 +143,14 @@ $(function () {
 				if (response.type == 'error') {
 					$('.import-results').addClass('box-danger');
 				}
-				if (response._duplicates > 0) {
+				if (response.type == 'warning') {
 					$('.import-results').addClass('box-warning');
 				}
 
 				$.each(response.messages, function(index, value) {
 					$('.import-results .result-content').append($('<div>'+value+'</div>'));
 				});
+				$('.import-results .result-content').append($('<br>'));
 
 				if (response._platform) {
 					$('.import-results .result-content').append($('<div>Platform detected: <strong>'+response._platform+'</strong></div>'));
