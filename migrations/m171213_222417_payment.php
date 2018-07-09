@@ -1,4 +1,4 @@
-<?php
+w<?php
 use yii\db\Schema;
 use yii\db\Migration;
 

@@ -1,5 +1,10 @@
 
 $(function () {
+
+	$('.overlay').hide();
+	$('.import-results').addClass('hide').removeClass('alert-danger').removeClass('alert-warning').removeClass('alert-success');
+	//$('.import-results .result-content').html('');
+
 	'use strict';
 	// Change this to the location of your server-side upload handler:
 	var url = '/jQueryFileUpload/server/php/',
@@ -118,17 +123,71 @@ $(function () {
 
 	function process_uploaded_file(filename) {
 
-		$.ajax({
-			url: '/sales/import',
-			type   : 'POST',
-			dataType : 'json',
-			data   : {filename: filename},
+		$('.overlay').show();
+		$('.import-results').removeClass('hide');
 
-			success: function (response) {
+		$.ajax({
+			url			: '/sales/import',
+			type   		: 'POST',
+			dataType 	: 'json',
+			data   		: {filename: filename},
+
+			success		: function (response) {
+				//json = $.parseJSON(response);
 				console.log(response);
+
+
+				if (response.type == 'success') {
+					$('.import-results').addClass('box-success');
+				}
+				if (response.type == 'error') {
+					$('.import-results').addClass('box-danger');
+				}
+				if (response._duplicates > 0) {
+					$('.import-results').addClass('box-warning');
+				}
+
+				$.each(response.messages, function(index, value) {
+					$('.import-results .result-content').append($('<div>'+value+'</div>'));
+				});
+
+				if (response._platform) {
+					$('.import-results .result-content').append($('<div>Platform detected: <strong>'+response._platform+'</strong></div>'));
+				}
+				if (response._stats) {
+					$('.import-results .result-content').append($('<div>'+response._stats+'</div>'));
+				}
+
+
+				if (response._parsed) {
+					$('#import_parsed').html(response._parsed);
+				}
+
+				if (response._imported) {
+					$('#import_imported').html(response._imported);
+				}
+
+				if (response._duplicates) {
+					$('#import_duplicates').html(response._duplicates);
+				}
+
+				if (response._failed) {
+					$('#import_failed').html(response._failed);
+				}
+
+				if (response._parsed) {
+					$('#import_parsed').html(response._parsed);
+				}
+
+
+				window.setTimeout(function () {
+					$('.overlay').hide();
+					$('#reload-grid').click();
+				}, 1000);
+
 			},
 
-			error  : function (e) 	{
+			error		: function (e) 	{
 				console.log(e);
 			}
 		});

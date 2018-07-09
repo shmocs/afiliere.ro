@@ -99,6 +99,7 @@ echo GridView::widget([
 	                'data-target' => '#modal-default',
                 ]) . ' '.
                 Html::a('<i class="glyphicon glyphicon-repeat"></i>', ['index'], [
+                    'id' => 'reload-grid',
                     'class' => 'btn btn-default',
                     'title' => 'Reset Grid',
                 ]),

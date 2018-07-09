@@ -27,9 +27,62 @@
 				<div id="files" class="files"></div>
 				
 				
-				<div class="box-footer">
+				<div class="box box-solid import-results">
+					<div class="box-header with-border">
+						<h3 class="box-title">Results</h3>
+						
+						<div class="box-tools pull-right">
+							<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+							</button>
+						</div>
+						<!-- /.box-tools -->
+					</div>
+					<!-- /.box-header -->
 					
-					<div class="output"></div>
+					<div class="box-body result-content">
+
+					</div>
+					<!-- /.box-body -->
+					
+					<div class="box-footer no-padding">
+						<ul class="nav nav-stacked">
+							<li><a>Parsed <span class="pull-right badge bg-aqua" id="import_parsed">0</span></a></li>
+							<li><a>Duplicates <span class="pull-right badge bg-orange" id="import_duplicates">0</span></a></li>
+							<li><a>Imported <span class="pull-right badge bg-green" id="import_imported">0</span></a></li>
+							<li><a>Failed <span class="pull-right badge bg-red" id="import_failed">0</span></a></li>
+						</ul>
+					</div>
+					
+					<!--Loading (remove the following to stop the loading)-->
+					<div class="overlay">
+						<i class="fa fa-refresh fa-spin"></i>
+					</div>
+					
+				</div>
+				
+				
+				<div class="box hide">
+					
+					<div class="box-header">
+						<i class="fa fa-th-list"></i>
+						
+						<h3 class="box-title">Results</h3>
+					</div>
+					<!-- /.box-header -->
+					
+					<div class="box-body">
+						
+						<div class="alert hide">
+							<div class="result-content"></div>
+						</div>
+						
+					</div>
+					<!-- /.box-body -->
+					
+					<!--Loading (remove the following to stop the loading)-->
+					<div class="overlay">
+						<i class="fa fa-refresh fa-spin"></i>
+					</div>
 					
 				</div>
 				

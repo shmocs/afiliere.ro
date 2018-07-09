@@ -8,16 +8,24 @@
 
 namespace yii\sales;
 
+use Yii;
+use yii\db\Exception;
 
 class SalesImport
 {
 	public $filename;
 	public $filepath;
 	public $content;
+	
 	public $platform = '';
+	
 	public $parsed_rows = [];
 	public $imported_rows = [];
 	public $duplicate_rows = [];
+	public $failed_rows = [];
+	
+	public $first_record = '0';
+	public $last_record = '0';
 	
 	public $result;
 	
@@ -25,12 +33,16 @@ class SalesImport
 	{
 		$result = [
 			'type' => 'success',
-			'messages' => [],
+			'messages' => [
+			    'Processing file ['.$filename.']'
+            ],
 		];
 		
-		if (is_file(\Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename)) {
+        $this->filepath = \Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename;
+		
+		if (is_file($this->filepath)) {
 			$this->filename = $filename;
-			$this->filepath = \Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename;
+			
 			//$this->content = file_get_contents($this->filepath);
 			
 			$this->detect_platform();
@@ -44,11 +56,20 @@ class SalesImport
 				$this->import_rows($to_import); //populate imported_rows
 				
 				$result['type'] = 'success';
-				$result['messages'][] = 'Parsed rows: ' . count($this->parsed_rows);
-				$result['messages'][] = 'Imported rows: ' . count($this->imported_rows);
-				$result['messages'][] = 'Duplicate rows: ' . count($this->duplicate_rows);
+				$result['_platform'] = $this->platform;
+				$result['_parsed'] = count($this->parsed_rows);
+				$result['_imported'] = count($this->imported_rows);
+				$result['_duplicates'] = count($this->duplicate_rows);
+				$result['_failed'] = count($this->failed_rows);
+				$result['_stats'] = '
+                    Imported from
+                    <strong><span id="first_record">'.$this->first_record.'</span></strong>
+                    to
+                    <strong><span id="last_record">'.$this->last_record.'</span></strong>
+                    .
+				';
 
-			}else{
+			} else {
 				$result['type'] = 'error';
 				$result['messages'][] = 'File Format unknown';
 			}
@@ -144,12 +165,76 @@ class SalesImport
 	
 	
 	public function analyze_rows() {
-		
-		return [];
+        
+        $to_import = [];
+	    
+        foreach ($this->parsed_rows as $record) {
+    
+            $params = [
+                ':platform' => $record['platform'],
+                ':advertiser' => $record['advertiser'],
+                ':click_date' => $record['click_date'],
+                ':conversion_date' => $record['conversion_date'],
+                ':amount' => $record['amount'],
+                ':referrer' => $record['referrer'],
+                ':status' => $record['status'],
+            ];
+            
+            $sale = Yii::$app->db->createCommand('SELECT * FROM sale WHERE
+                platform=:platform AND
+                advertiser=:advertiser AND
+                click_date=:click_date AND
+                conversion_date=:conversion_date AND
+                amount=:amount AND
+                referrer=:referrer AND
+                status=:status
+            ')
+                ->bindValues($params)
+                ->queryOne();
+            
+            if ($sale) {
+                $this->duplicate_rows[] = $record;
+            } else {
+                $to_import[] = $record;
+            }
+            
+        }
+	    
+		return $to_import;
 	}
+	
 	
 	public function import_rows($new_records) {
 		
+	    foreach ($new_records as $record) {
+	        
+	        if ($record['conversion_date'] < $this->first_record) {
+                $this->first_record = $record['conversion_date'];
+            }
+	        if ($record['conversion_date'] > $this->last_record) {
+                $this->last_record = $record['conversion_date'];
+            }
+        
+            try {
+	            
+                Yii::$app->db->createCommand()->insert('sale', [
+                    'platform'          => $record['platform'],
+                    'advertiser'        => $record['advertiser'],
+                    'click_date'        => $record['click_date'],
+                    'conversion_date'   => $record['conversion_date'],
+                    'amount'            => $record['amount'],
+                    'referrer'          => $record['referrer'],
+                    'status'            => $record['status'],
+                ])->execute();
+    
+                $this->imported_rows[] = $record;
+                
+            } catch (Exception $e) {
+	            $this->failed_rows[] = $record;
+            }
+            
+        }
+	    
 		return [];
 	}
 }

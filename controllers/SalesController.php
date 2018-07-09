@@ -49,11 +49,11 @@ class SalesController extends Controller
 	    ];
 	    
 	    if (isset($_POST['filename'])) {
-	    	$response['messages'][] = 'Processing file ['.$_POST['filename'].']';
+
 	    	
 	    	$import = new SalesImport($_POST['filename']);
-		    $response['type'] = $import->result['type'];
-		    $response['messages'] = array_merge($response['messages'], $import->result['messages']);
+	    	
+		    $response = $import->result;
 		    
 	    } else {
 		    $response['messages'][] = 'File missing !';
