@@ -139,12 +139,15 @@ $(function () {
 
 				if (response.type == 'success') {
 					$('.import-results').addClass('box-success');
+					$('.import-results .box-title').html('Results ... All OK!');
 				}
 				if (response.type == 'error') {
 					$('.import-results').addClass('box-danger');
+					$('.import-results .box-title').html('Results ... Errors!');
 				}
 				if (response.type == 'warning') {
 					$('.import-results').addClass('box-warning');
+					$('.import-results .box-title').html('Results ... Warning!');
 				}
 
 				$.each(response.messages, function(index, value) {
@@ -181,11 +184,15 @@ $(function () {
 				}
 
 
+				$('.overlay').hide();
+
+				/*
 				window.setTimeout(function () {
-					$('.overlay').hide();
 					$('#reload-grid').click();
 				}, 1000);
+				*/
 
+				import_finished = true;
 			},
 
 			error		: function (e) 	{

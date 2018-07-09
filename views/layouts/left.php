@@ -13,18 +13,6 @@
                 <a href="#"><i class="fa fa-circle text-success"></i>Online</a>
             </div>
         </div>
-
-        <!-- search form -->
-        <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search..."/>
-              <span class="input-group-btn">
-                <button type='submit' name='search' id='search-btn' class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-        </form>
-        <!-- /.search form -->
 	    
 	    <?php
 	    //\yii\helpers\VarDumper::dump(Yii::$app->user);
@@ -33,14 +21,15 @@
 	    $menu = [
 		    'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
 		    'items' => [
-			    ['label' => 'Menu', 'options' => ['class' => 'header']],
+			    //['label' => 'Menu', 'options' => ['class' => 'header']],
 			    ['label' => 'Dashboard', 'icon' => 'area-chart', 'url' => ['/']],
-			    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
+			    //['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii']],
 			    //['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug']],
 			    [
 				    'label' => 'Some tools',
 				    'icon' => 'gears',
-				    'url' => '#', 'visible' => false,
+				    'url' => '#',
+				    'visible' => false,
 				    'items' => [
 					    ['label' => 'Gii', 'icon' => 'file-code-o', 'url' => ['/gii'],],
 					    ['label' => 'Debug', 'icon' => 'dashboard', 'url' => ['/debug'],],
@@ -67,7 +56,7 @@
 				    'label' => 'Sales',
 				    'icon' => 'dollar',
 				    'url' => '/sales/index',
-				    
+				    'visible' => true,
 				    'options' => [
 				        'class' => (Yii::$app->controller->id == 'sales') ? 'active' : '',
 					],
@@ -82,6 +71,7 @@
 				    'label' => 'Export',
 				    'icon' => 'download',
 				    'url' => '/payments/index',
+				    'visible' => false,
 				    'options' => [
 					    'class' => (Yii::$app->controller->id == 'payments') ? 'menu-open active' : '',
 				    ],

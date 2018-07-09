@@ -3,6 +3,9 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 
+use kartik\icons\Icon;
+Icon::map($this, Icon::BSG);
+
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
 use kartik\export\ExportMenu;
@@ -11,40 +14,27 @@ use app\models\Import;
 use yii\helpers\ArrayHelper;
 
 //$this->registerJs('/js/sales.js'); => <script type="text/javascript">jQuery(function ($) {/js/sales.js});</script>
-
-$this->registerCss('https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css');
-$this->registerCss('/jQueryFileUpload/css/jquery.fileupload.css');
-$this->registerCss('/jQueryFileUpload/css/jquery.fileupload-ui.css');
+$this->registerJs('$(\'.sidebar-toggle\').click();');
 
 //VarDumper::dump($_SERVER, 10, true);
 //VarDumper::dump(\Yii::getAlias('@webroot'), 10, true);
 
-
 ?>
 
-<!-- Main content -->
-<!-- <section class="content">-->
-<!--	<div class="row">-->
-<!--		<div class="col-xs-12">-->
-<!--			-->
-<!--			<div class="box">-->
-<!--				<div class="box-header">-->
-<!--					<h3 class="box-title">Data Table With Full Features</h3>-->
-<!--				</div>-->
-<!--				<!-- /.box-header -->
-<!--				<div class="box-body">-->
 				
 <?php
 
-$defaultStyle = [
-
-];
+$filename_date = date("Y-m-d_H-i-s");
+if (isset($_GET['Sale']['conversion_date'])) {
+	$filename_date = $_GET['Sale']['conversion_date'];
+}
 
 $fullExportMenu = ExportMenu::widget([
 	'dataProvider' => $dataProvider,
 	'columns' => $searchModel->getExportColumns(),
 	'target' => ExportMenu::TARGET_SELF,
 	'fontAwesome' => true,
+	'filename' => 'SalesAdwordsExport_'.$filename_date,
 	'showConfirmAlert' => true,
 	'showColumnSelector' => true,
 	'dropdownOptions' => [
@@ -66,11 +56,123 @@ $fullExportMenu = ExportMenu::widget([
 	],
 ]);
 
+$columns = [
+	[
+		'attribute' => 'id',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '4%',
+	],
+	[
+		'attribute' => 'platform',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '7%',
+		'value' => function ($model, $key, $index, $widget) {
+			return Html::a($model->platform,
+				'#',
+				['title' => 'Filtrare dupa platforma', 'onclick' => 'alert("Filtrare dupa platforma!")']);
+		},
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Sale::find()->orderBy('platform')->asArray()->all(), 'platform', 'platform'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'any'],
+		'format' => 'raw'
+	],
+	[
+		'attribute' => 'advertiser',
+		'vAlign' => 'middle',
+		'width' => '150px',
+	],
+	[
+		'attribute' => 'click_date',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '10%',
+	],
+	[
+		'attribute' => 'conversion_date',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '240px',
+		'filterType' => GridView::FILTER_DATE_RANGE,
+		'filterWidgetOptions' => [
+			'presetDropdown'=>true,
+			'pluginOptions' => [
+				'opens'=>'right',
+				'locale' => [
+					'cancelLabel' => 'Clear',
+					'format' => 'YYYY-MM-DD',
+				]
+			],
+		],
+	
+	],
+	[
+		'attribute' => 'amount',
+		'hAlign' => 'right',
+		'vAlign' => 'middle',
+		'width' => '5%',
+		'pageSummary' => true
+	],
+	[
+		'attribute' => 'referrer',
+		'vAlign' => 'middle',
+		'value' => function ($model, $key, $index, $widget) {
+			return '<div style="overflow-x: scroll; width: 100%; max-width: 250px; white-space: nowrap;">'.$model->referrer.'</div>';
+		},
+		'format' => 'raw',
+	],
+	[
+		'attribute' => 'status',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '7%',
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Sale::find()->orderBy('status')->asArray()->all(), 'status', 'status'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'any'],
+	],
+	[
+		'attribute' => 'created_at',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '10%',
+	],
+	[
+		'attribute' => 'import_id',
+		'vAlign' => 'middle',
+		'value' => function ($model, $key, $index, $widget) {
+			$a_dld = Html::a(
+				Icon::show('download', ['class'=>'fa-1x'], Icon::BSG),
+				'#',
+				['data-href' => '/jQueryFileUpload/server/php/files/'.$model->import->filename, 'class' => 'download', 'title' => 'Download the file', 'target' => '_blank']);
+			$a_filter = Html::a($model->import->filename,
+				'index?Sale[import_id]='.$model->import_id,
+				['title' => 'Filtrare fisier', 'onclick' => 'alert("Filtrare dupa fisier!")']);
+			
+			
+			return '<div style="overflow-x: auto; width: 100%; max-width: 300px; white-space: nowrap;">'.$a_dld.$a_filter.'</div>';
+		},
+		'filterType' => GridView::FILTER_SELECT2,
+		'filter' => ArrayHelper::map(Import::find()->orderBy('created_at DESC')->asArray()->all(), 'id', 'filename'),
+		'filterWidgetOptions' => [
+			'pluginOptions' => ['allowClear' => true],
+		],
+		'filterInputOptions' => ['placeholder' => 'all'],
+		'format' => 'raw',
+	],
+];
+
 // Generate a bootstrap responsive striped table with row highlighted on hover
 echo GridView::widget([
 	'dataProvider'=> $dataProvider,
 	'filterModel' => $searchModel,
-	'columns' => $searchModel->getGridColumns(),
+	'columns' => $columns,
 	
 	'resizableColumns'=>false,
 	'resizeStorageKey'=>Yii::$app->user->id . '-' . date("m"),
@@ -96,7 +198,7 @@ echo GridView::widget([
                     'title'=> 'Add Book',
                     'class'=>'btn btn-success',
 	                'data-toggle' => 'modal',
-	                'data-target' => '#modal-default',
+	                'data-target' => '#modal-import',
                 ]) . ' '.
                 Html::a('<i class="glyphicon glyphicon-repeat"></i>', ['index'], [
                     'id' => 'reload-grid',
@@ -116,106 +218,16 @@ echo GridView::widget([
         '_before' => '<div style="padding-top: 7px;"><em>* Resize table columns just like a spreadsheet by dragging the column edges.</em></div>',
     ],
 	
+	// ---> these valid only for {export} template that is commented
 	'export' => [
-		'header' => '',
+		'header' => 'kk',
         'fontAwesome' => true,
 	],
- 
-	'exportConfig' => [
+ 	'exportConfig' => [
 		GridView::CSV => ['label' => 'Save as CSV', 'icon' => 'file-excel-o'],
 	],
-
+	// <---
 ]);
 ?>
-<!--				</div>-->
-<!--			</div>-->
-<!--		</div>-->
-<!--	</div>-->
-<!--</section>-->
-
 
 <?= $this->render('_partial/import.php') ?>
-
-
-
-<div class="content-wrapper2 hide">
-	<!-- Content Header (Page header) -->
-	<section class="content-header">
-		<h1>
-			Data Tables
-			<small>advanced tables</small>
-		</h1>
-		<ol class="breadcrumb">
-			<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-			<li><a href="#">Tables</a></li>
-			<li class="active">Data tables</li>
-		</ol>
-	</section>
-	
-	<!-- Main content -->
-	<section class="content">
-		<div class="row">
-			<div class="col-xs-12">
-				
-				<div class="box">
-					<div class="box-header">
-						<h3 class="box-title">Data Table With Full Features</h3>
-					</div>
-					<!-- /.box-header -->
-					<div class="box-body">
-						<table id="example1" class="table table-bordered table-striped table-hover">
-							<thead>
-							<tr>
-								<th style="width: 20px;">ID</th>
-								<th style="width: 50px;">Platforma</th>
-								<th style="width: 200px;">Advertiser</th>
-								<th style="width: 120px;">Data Click</th>
-								<th style="width: 120px;">Data Conversie</th>
-								<th style="width: 60px; text-align: right;">Comision</th>
-								<th>Refferer</th>
-								<th style="width: 100px;">Status</th>
-							</tr>
-							</thead>
-							
-							<tbody>
-								<?php
-								foreach ($dataProvider->models as $row) {
-									?>
-									<tr>
-										<td><?=$row->id;?></td>
-										<td><?=$row->platform;?></td>
-										<td><?=$row->advertiser;?></td>
-										<td><?=$row->click_date;?></td>
-										<td><?=$row->conversion_date;?></td>
-										<td style="text-align: right;"><?=$row->amount;?></td>
-										<td><div style="overflow-x: scroll; width: 600px; white-space: nowrap;"><?=$row->referrer;?></div></td>
-										<td style="text-align: center;"><?=$row->status;?></td>
-									</tr>
-									<?php
-								}
-								?>
-							</tbody>
-							
-							<tfoot>
-							<tr>
-								<th>Advertiser</th>
-								<th>Data Click</th>
-								<th>Data Conversie</th>
-								<th>Comisionului</th>
-								<th>Refferer</th>
-								<th>Status</th>
-							</tr>
-							</tfoot>
-						</table>
-					</div>
-					<!-- /.box-body -->
-				</div>
-				<!-- /.box -->
-			</div>
-			<!-- /.col -->
-		</div>
-		<!-- /.row -->
-	</section>
-	<!-- /.content -->
-</div>
-

@@ -45,17 +45,19 @@ Status	in PS este coloana “Status” , in 2P este coloana “Status”
 		$this->createTable('{{%sale}}', [
 			'id' => Schema::TYPE_PK,
 			'platform' => Schema::TYPE_STRING . ' not null',
+			'platform_id' => Schema::TYPE_STRING . ' not null',
 			'advertiser' => Schema::TYPE_STRING . ' not null',
 			'click_date' => Schema::TYPE_DATETIME . ' not null',
 			'conversion_date' => Schema::TYPE_DATETIME . ' not null',
 			'amount' =>  Schema::TYPE_DECIMAL.'(10, 2)' . ' not null',
-			'referrer' => Schema::TYPE_STRING . ' not null',
+			'referrer' => Schema::TYPE_TEXT . ' not null',
 			'status' => Schema::TYPE_STRING . ' not null',
 			'created_at' => Schema::TYPE_DATETIME . ' not null',
 		], $tableOptions);
 
 		// add indexes for performance optimization
 		$this->createIndex('{{%sale_platform}}', '{{%sale}}', 'platform', false);
+		$this->createIndex('{{%sale_platform_id}}', '{{%sale}}', 'platform_id', false);
 		$this->createIndex('{{%sale_advertiser}}', '{{%sale}}', 'advertiser', false);
 		$this->createIndex('{{%sale_click_date}}', '{{%sale}}', 'click_date', false);
 		$this->createIndex('{{%sale_conversion_date}}', '{{%sale}}', 'conversion_date', false);

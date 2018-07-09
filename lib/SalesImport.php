@@ -8,6 +8,7 @@
 
 namespace yii\sales;
 
+use app\models\Import;
 use Yii;
 use yii\db\Exception;
 
@@ -34,7 +35,7 @@ class SalesImport
 	public function __construct($filename)
 	{
 		$result = [];
-		$this->messages[] = 'Processing file ['.$filename.']';
+		$this->messages[] = 'Processing file ['.$filename.']<br>';
 		
         $this->filepath = \Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename;
 		
@@ -121,9 +122,10 @@ class SalesImport
 			
 			$row = [
 				'platform'          => '2Performant',
+				'platform_id'       => $columns[0],
 				'advertiser'        => $columns[1],
-				'click_date'        => $columns[13],
-				'conversion_date'   => $columns[11],
+				'click_date'        => $this->utc_to_datetime($columns[13]),
+				'conversion_date'   => $this->utc_to_datetime($columns[11]),
 				'amount'            => $columns[6],
 				'referrer'          => $columns[15],
 				'status'            => $columns[7],
@@ -137,7 +139,7 @@ class SalesImport
 	
 	public function ParserProfitShare() {
 		$lines = file($this->filepath);
-		array_splice($lines, 0, 7);
+		array_splice($lines, 0, 9);
 		$rows = [];
 		
 		foreach ($lines as $line) {
@@ -150,6 +152,7 @@ class SalesImport
 			
 			$row = [
 				'platform'          => 'ProfitShare',
+				'platform_id'       => $columns[1],
 				'advertiser'        => $columns[0],
 				'click_date'        => $columns[3],
 				'conversion_date'   => $columns[2],
@@ -179,25 +182,11 @@ class SalesImport
             }
             
             $params = [
-                ':platform' => $record['platform'],
-                ':advertiser' => $record['advertiser'],
-                ':click_date' => $record['click_date'],
-                ':conversion_date' => $record['conversion_date'],
-                ':amount' => $record['amount'],
-                ':referrer' => $record['referrer'],
-                ':status' => $record['status'],
+                ':platform_id' => $record['platform_id'],
             ];
             
             try {
-                $sale = Yii::$app->db->createCommand('SELECT * FROM sale WHERE
-                    platform=:platform AND
-                    advertiser=:advertiser AND
-                    click_date=:click_date AND
-                    conversion_date=:conversion_date AND
-                    amount=:amount AND
-                    referrer=:referrer AND
-                    status=:status
-                ')
+                $sale = Yii::$app->db->createCommand('SELECT platform_id FROM sale WHERE platform_id=:platform_id')
                     ->bindValues($params)
                     ->queryOne();
                 
@@ -219,18 +208,31 @@ class SalesImport
 	
 	public function import_rows($new_records) {
 		
+		try {
+			$import = new Import();
+			$import->filename = $this->filename;
+			if (!$import->save()) {
+				$this->messages[] = 'Import not created';
+				return false;
+			}
+			
+		} catch (Exception $e) {
+			$this->messages[] = $e->getMessage();
+		}
+		
 	    foreach ($new_records as $record) {
 	        
             try {
-	            
                 Yii::$app->db->createCommand()->insert('sale', [
                     'platform'          => $record['platform'],
+                    'platform_id'       => $record['platform_id'],
                     'advertiser'        => $record['advertiser'],
                     'click_date'        => $record['click_date'],
                     'conversion_date'   => $record['conversion_date'],
                     'amount'            => $record['amount'],
                     'referrer'          => $record['referrer'],
                     'status'            => $record['status'],
+                    'import_id'         => $import->id,
                 ])->execute();
     
                 $this->imported_rows[] = $record;
@@ -243,5 +245,12 @@ class SalesImport
         }
 	    
 		return [];
+	}
+	
+	public function utc_to_datetime($dateWithTimeZone) {
+		$time = strtotime($dateWithTimeZone);
+		$date = date("Y-m-d H:i:s", $time);
+		
+		return $date;
 	}
 }

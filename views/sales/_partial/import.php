@@ -1,5 +1,5 @@
 
-<div class="modal fade" id="modal-default" style="display: none;">
+<div class="modal fade" id="modal-import" style="display: none;">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
