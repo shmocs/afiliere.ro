@@ -12,7 +12,12 @@ use yii\helpers\ArrayHelper;
 
 //$this->registerJs('/js/sales.js'); => <script type="text/javascript">jQuery(function ($) {/js/sales.js});</script>
 
+$this->registerCss('https://blueimp.github.io/Gallery/css/blueimp-gallery.min.css');
+$this->registerCss('/jQueryFileUpload/css/jquery.fileupload.css');
+$this->registerCss('/jQueryFileUpload/css/jquery.fileupload-ui.css');
+
 //VarDumper::dump($_SERVER, 10, true);
+//VarDumper::dump(\Yii::getAlias('@webroot'), 10, true);
 
 
 ?>
@@ -31,6 +36,9 @@ use yii\helpers\ArrayHelper;
 				
 <?php
 
+$defaultStyle = [
+
+];
 
 $fullExportMenu = ExportMenu::widget([
 	'dataProvider' => $dataProvider,
@@ -83,9 +91,12 @@ echo GridView::widget([
         [
             'content'=>
                 Html::button('<i class="glyphicon glyphicon-plus"></i>', [
+                    'id'=>'add_sales',
                     'type'=>'button',
                     'title'=> 'Add Book',
-                    'class'=>'btn btn-success'
+                    'class'=>'btn btn-success',
+	                'data-toggle' => 'modal',
+	                'data-target' => '#modal-default',
                 ]) . ' '.
                 Html::a('<i class="glyphicon glyphicon-repeat"></i>', ['index'], [
                     'class' => 'btn btn-default',
@@ -120,6 +131,9 @@ echo GridView::widget([
 <!--		</div>-->
 <!--	</div>-->
 <!--</section>-->
+
+
+<?= $this->render('_partial/import.php') ?>
 
 
 

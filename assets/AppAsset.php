@@ -21,12 +21,18 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
+	    'jQueryFileUpload/css/jquery.fileupload.css',
     ];
     public $js = [
     	'js/main.js',
-    	'js/sales.js'
+    	'js/sales.js',
+    	'jQueryFileUpload/js/jquery.fileupload.js',
+    	'jQueryFileUpload/js/jquery.fileupload-process.js',
+    	'jQueryFileUpload/js/jquery.fileupload-validate.js',
+    	'js/import.js',
     ];
     public $depends = [
+	    'yii\jui\JuiAsset',
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
     ];

@@ -6,6 +6,7 @@ use app\models\Sale;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\VarDumper;
+use yii\sales\SalesImport;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -26,7 +27,7 @@ class SalesController extends Controller
 	    $dataProvider = $searchModel->search($params);
 	    
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
-	
+	    
 	    return $this->render(
 		    'index',
 		    [
@@ -35,6 +36,31 @@ class SalesController extends Controller
 			    'model' => $searchModel,
 		    ]
 	    );
+    }
+
+    public function actionImport()
+    {
+    	//'filename' => 'danielavaduva-commissions-all (7).csv'
+	    //VarDumper::dump($_POST);
+	    
+	    $response = [
+	    	'type' => 'success',
+		    'messages' => [],
+	    ];
+	    
+	    if (isset($_POST['filename'])) {
+	    	$response['messages'][] = 'Processing file ['.$_POST['filename'].']';
+	    	
+	    	$import = new SalesImport($_POST['filename']);
+		    $response['type'] = $import->result['type'];
+		    $response['messages'] = array_merge($response['messages'], $import->result['messages']);
+		    
+	    } else {
+		    $response['messages'][] = 'File missing !';
+		    $response['type'] = 'error';
+	    }
+	
+	    echo json_encode($response);
     }
 
 }
