@@ -25,7 +25,6 @@ class SalesController extends Controller
 	    $params = Yii::$app->request->get();
 	
 	    $dataProvider = $searchModel->search($params);
-	    
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
 	    
 	    return $this->render(

@@ -23,7 +23,14 @@ class SalesImport
 	public $messages = [];
 	
 	public $parsed_rows = [];
+	
+	public $to_import_rows = [];
 	public $imported_rows = [];
+	public $import_id = 0;
+	
+	public $to_update_rows = [];
+	public $updated_rows = [];
+	
 	public $duplicate_rows = [];
 	public $failed_rows = [];
 	
@@ -31,6 +38,7 @@ class SalesImport
 	public $last_record = '0';
 	
 	public $result;
+	
 	
 	public function __construct($filename)
 	{
@@ -51,12 +59,14 @@ class SalesImport
 				$parserMethod = 'Parser'.$this->platform;
 				$this->$parserMethod();
 				
-				$to_import = $this->analyze_rows(); //populate parsed_rows, duplicate_rows
-				$this->import_rows($to_import); //populate imported_rows
+				$this->analyze_rows(); //populate parsed_rows, duplicate_rows, to_import_rows, to_update_rows
+				$this->import_rows(); //populate imported_rows
+				$this->update_rows(); //populate updated_rows
 				
 				$result['_platform'] = $this->platform;
 				$result['_parsed'] = count($this->parsed_rows);
 				$result['_imported'] = count($this->imported_rows);
+				$result['_updated'] = count($this->updated_rows);
 				$result['_duplicates'] = count($this->duplicate_rows);
 				$result['_failed'] = count($this->failed_rows);
 				$result['_stats'] = '
@@ -190,8 +200,6 @@ class SalesImport
 	
 	public function analyze_rows() {
         
-        $to_import = [];
-	    
         foreach ($this->parsed_rows as $record) {
     
             if ($record['conversion_date'] < $this->first_record || $this->first_record == '0') {
@@ -206,27 +214,35 @@ class SalesImport
             ];
             
             try {
-                $sale = Yii::$app->db->createCommand('SELECT platform_id FROM sale WHERE platform_id=:platform_id')
+                $sale = Yii::$app->db->createCommand('SELECT platform_id, status, amount FROM sale WHERE platform_id=:platform_id')
                     ->bindValues($params)
                     ->queryOne();
                 
             } catch (Exception $e) {
                 $this->messages[] = $e->getMessage();
+                return false;
             }
             
             if ($sale) {
-                $this->duplicate_rows[] = $record;
+	            
+            	if ($sale['status'] != $record['status']) {
+		            $this->to_update_rows[] = $record;
+		            $this->messages[] = $record['platform_id'].': '.$sale['status'].'|'.$sale['amount'].' -> '.$record['status'].'|'.$record['amount'];
+	            } else {
+		            $this->duplicate_rows[] = $record;
+	            }
+	
             } else {
-                $to_import[] = $record;
+                $this->to_import_rows[] = $record;
             }
             
         }
 	    
-		return $to_import;
+		return true;
 	}
 	
 	
-	public function import_rows($new_records) {
+	public function import_rows() {
 		
 		try {
 			$import = new Import();
@@ -235,12 +251,14 @@ class SalesImport
 				$this->messages[] = 'Import not created';
 				return false;
 			}
+			$this->import_id = $import->id;
 			
 		} catch (Exception $e) {
 			$this->messages[] = $e->getMessage();
+			return false;
 		}
 		
-	    foreach ($new_records as $record) {
+	    foreach ($this->to_import_rows as $record) {
 	        
             try {
                 Yii::$app->db->createCommand()->insert('sale', [
@@ -252,7 +270,7 @@ class SalesImport
                     'amount'            => $record['amount'],
                     'referrer'          => $record['referrer'],
                     'status'            => $record['status'],
-                    'import_id'         => $import->id,
+                    'import_id'         => $this->import_id,
                 ])->execute();
     
                 $this->imported_rows[] = $record;
@@ -265,6 +283,35 @@ class SalesImport
         }
 	    
 		return [];
+	}
+	
+	public function update_rows() {
+		
+	    foreach ($this->to_update_rows as $record) {
+	        
+            try {
+                Yii::$app->db->createCommand()->update(
+                	'sale',
+	                [
+	                    'amount'            => $record['amount'],
+	                    'status'            => $record['status'],
+	                    'import_id'         => $this->import_id,
+                    ],
+	                [
+		                'platform_id'       => $record['platform_id'],
+	                ]
+	            )->execute();
+    
+                $this->updated_rows[] = $record;
+                
+            } catch (Exception $e) {
+	            $this->failed_rows[] = $record;
+                $this->messages[] = $e->getMessage();
+            }
+            
+        }
+	    
+		return true;
 	}
 	
 	public function utc_to_datetime($dateWithTimeZone) {

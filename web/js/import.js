@@ -32,7 +32,7 @@ $(function () {
 		dataType: 'json',
 		autoUpload: false,
 		acceptFileTypes: /(\.)(csv)$/i,
-		maxFileSize: 999000,
+		maxFileSize: 9999000,
 		// Enable image resizing, except for Android and Opera,
 		// which actually support image resizing, but fail to
 		// send Blob objects via XHR requests:
@@ -169,6 +169,10 @@ $(function () {
 
 				if (response._imported) {
 					$('#import_imported').html(response._imported);
+				}
+
+				if (response._updated) {
+					$('#import_updated').html(response._updated);
 				}
 
 				if (response._duplicates) {
