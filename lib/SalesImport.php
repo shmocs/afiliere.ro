@@ -149,16 +149,16 @@ class SalesImport
             $columns = str_getcsv($line);
             
 			//Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
-			
+			//Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
 			$row = [
 				'platform'          => 'ProfitShare',
 				'platform_id'       => $columns[1],
 				'advertiser'        => $columns[0],
 				'click_date'        => $columns[3],
 				'conversion_date'   => $columns[2],
-				'amount'            => $columns[10] == 'Aprobat'? $columns[7] : $columns[8],
-				'referrer'          => $columns[11],
-				'status'            => $columns[10],
+				'amount'            => $columns[12] == 'Aprobate'? $columns[8] : $columns[9],
+				'referrer'          => $columns[13],
+				'status'            => $columns[12],
 			];
 			
 			$rows[] = $row;
