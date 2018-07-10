@@ -78,6 +78,7 @@ class Sale extends \yii\db\ActiveRecord
 		$columns = [
 			[
 				'attribute' => 'conversion_date',
+                'header' => 'Conversion Time',
 				'value' => function ($model, $key, $index, $widget) {
 					$utc_date = gmdate('Y-m-d H:i:s', strtotime($model->conversion_date)) . ' UTC';
 					return $utc_date;
@@ -140,6 +141,7 @@ class Sale extends \yii\db\ActiveRecord
 		$query->andFilterWhere(['like', 'referrer', $this->referrer]);
 		$query->andFilterWhere(['status' => $this->status]);
 		$query->andFilterWhere(['created_at' => $this->created_at]);
+		$query->andFilterWhere(['import_id' => $this->import_id]);
 		
 		
 		if( isset($this->conversion_date) && $this->conversion_date != '') {
