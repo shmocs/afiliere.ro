@@ -155,8 +155,6 @@ class Sale extends \yii\db\ActiveRecord
 	}
 	
 	
-	public static function getAllForCharts() {}
-	
 	public static function getDataChart01() {
 		$sql = "
 			SELECT DATE(`conversion_date`) AS `date`, `platform`, SUM(`amount`) AS `sum`, SUM(1) AS `cnt`
@@ -196,43 +194,6 @@ class Sale extends \yii\db\ActiveRecord
 		$data[] = $record[$keep_date];
 		
 		return $data;
-	}
-	
-	public static function _getDataChart01() {
-		
-		ini_set('memory_limit', '256M');
-    	
-    	$data = $record = [];
-		$keep_date = '';
-		rsort($sales);
-		
-		foreach ($sales as $sale) {
-			if ($keep_date != $sale['conversion_date']) {
-				
-				if (!empty($keep_date)) {
-					unset($record[$keep_date]);
-					$data[] = $record;
-				}
-				
-				$keep_date = $sale['conversion_date'];
-				$record = [
-					$keep_date => [
-						'date' => $keep_date,
-						'total' => 0
-					]
-				];
-
-			}
-			if (!isset($record[$keep_date][$sale['platform']])) {
-				$record[$keep_date][$sale['platform']] = 0;
-			}
-			
-			$record[$keep_date][$sale['platform']] += $sale['amount'];
-			$record[$keep_date]['total'] += $sale['amount'];
-    	}
-		$data[] = $record;
-		
-    	return json_encode($data);
 	}
 	
 }

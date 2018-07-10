@@ -61,6 +61,7 @@ class SalesController extends Controller
 	    }
 	
 	    echo json_encode($response);
+	    die();
     }
 
 }
