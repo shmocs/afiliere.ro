@@ -195,7 +195,7 @@ echo GridView::widget([
                 Html::button('<i class="glyphicon glyphicon-plus"></i>', [
                     'id'=>'add_sales',
                     'type'=>'button',
-                    'title'=> 'Add Book',
+                    'title'=> 'Import Sales CSV',
                     'class'=>'btn btn-success',
 	                'data-toggle' => 'modal',
 	                'data-target' => '#modal-import',

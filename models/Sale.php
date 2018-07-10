@@ -148,7 +148,7 @@ class Sale extends \yii\db\ActiveRecord
 			$date_explode = explode(" - ",$this->conversion_date);
 			$date1 = trim($date_explode[0]);
 			$date2 = trim($date_explode[1]);
-			$query->andFilterWhere(['between', 'conversion_date', $date1, $date2]);
+			$query->andFilterWhere(['between', 'conversion_date', $date1.' 00:00:00', $date2.' 23:59:59']);
 		}
 		
 		//VarDumper::dump($query->createCommand()->getRawSql(), 10, true);
