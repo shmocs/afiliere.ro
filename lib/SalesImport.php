@@ -70,12 +70,12 @@ class SalesImport
 				$result['_duplicates'] = count($this->duplicate_rows);
 				$result['_failed'] = count($this->failed_rows);
 				$result['_stats'] = '
-                    Imported from <strong>'.$this->first_record.'</strong>
+                    Records from <strong>'.$this->first_record.'</strong>
                     to <strong>'.$this->last_record.'</strong>.
 				';
 				$result['messages'] = $this->messages;
                 
-                $result['type'] = $result['_failed'] > 0 ? 'error' : ($result['_duplicates'] > 0 ? 'warning' : 'success');
+                $result['type'] = $result['_failed'] > 0 ? 'error' : ($result['_duplicates'] > 0 ? ($result['_updated'] > 0 ? 'info' : 'warning') : 'success');
 
 			} else {
 				$result['type'] = 'error';
@@ -227,7 +227,7 @@ class SalesImport
 	            
             	if ($sale['status'] != $record['status']) {
 		            $this->to_update_rows[] = $record;
-		            $this->messages[] = $record['platform_id'].': '.$sale['status'].'|'.$sale['amount'].' -> '.$record['status'].'|'.$record['amount'];
+		            //$this->messages[] = $record['platform_id'].': '.$sale['status'].'|'.$sale['amount'].' -> '.$record['status'].'|'.$record['amount'];
 	            } else {
 		            $this->duplicate_rows[] = $record;
 	            }

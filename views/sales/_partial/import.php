@@ -46,10 +46,10 @@
 					
 					<div class="box-footer no-padding">
 						<ul class="nav nav-stacked">
-							<li><a>Parsed <span class="pull-right badge bg-aqua" id="import_parsed">0</span></a></li>
+							<li><a>Parsed <span class="pull-right badge bg-purple disabled" id="import_parsed">0</span></a></li>
 							<li><a>Duplicates <span class="pull-right badge bg-orange" id="import_duplicates">0</span></a></li>
 							<li><a>Imported <span class="pull-right badge bg-green" id="import_imported">0</span></a></li>
-							<li><a>Updated <span class="pull-right badge bg-purple disabled" id="import_updated">0</span></a></li>
+							<li><a>Updated <span class="pull-right badge bg-aqua" id="import_updated">0</span></a></li>
 							<li><a>Failed <span class="pull-right badge bg-red" id="import_failed">0</span></a></li>
 						</ul>
 					</div>

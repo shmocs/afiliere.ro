@@ -147,7 +147,11 @@ $(function () {
 				}
 				if (response.type == 'warning') {
 					$('.import-results').addClass('box-warning');
-					$('.import-results .box-title').html('Results ... Warning!');
+					$('.import-results .box-title').html('Results ... Duplicates found!');
+				}
+				if (response.type == 'info') {
+					 $('.import-results').addClass('box-info');
+					 $('.import-results .box-title').html('Results ... Updates found!');
 				}
 
 				$.each(response.messages, function(index, value) {
