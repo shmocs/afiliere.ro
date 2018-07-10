@@ -13,14 +13,39 @@ $data = [
 		'2p' => 3,
 		'ps' => 8,
 	],
+	[
+		'date' => '2017-11-08',
+		'total' => 5,
+		'2p' => 4,
+		'ps' => 1,
+	],
+	[
+		'date' => '2017-11-09',
+		'total' => 3,
+		'2p' => 0,
+		'ps' => 3,
+	],
+	[
+		'date' => '2017-11-11',
+		'total' => 5,
+		'2p' => 2,
+		'ps' => 3,
+	],
 ];
+
+//$sales = \app\models\Sale::getAllForCharts();
+//\yii\helpers\VarDumper::dump($sales, 10, true);
+
+$data = \app\models\Sale::getDataChart01();
+//\yii\helpers\VarDumper::dump($data, 10, true);
+
 $json_data = json_encode($data);
 
 ?>
 
 <!-- Styles -->
 <style>
-	#chartdiv {
+	#chartdiv_sales, #chartdiv_conversions {
 		width: 100%;
 		height: 500px;
 	}
@@ -32,11 +57,16 @@ $json_data = json_encode($data);
 <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
 <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
 <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+<!--<script src="http://www.amcharts.com/lib/3/plugins/dataloader/dataloader.min.js" type="text/javascript"></script>-->
 
 <!-- Chart code -->
 <script>
-	var chart = AmCharts.makeChart("chartdiv", {
+	var chart_sales = AmCharts.makeChart("chartdiv_sales", {
 		"type": "serial",
+		// "dataLoader": {
+		// 	"url": "sales/chart01",
+		// 	"format": "json"
+		// },
 		"theme": "light",
 		"dataDateFormat": "YYYY-MM-DD",
 		"precision": 2,
@@ -57,7 +87,7 @@ $json_data = json_encode($data);
 			"fillAlphas": 1,
 			"type": "column",
 			"title": "Total Sales",
-			"valueField": "total",
+			"valueField": "total_sales",
 			"clustered": false,
 			"columnWidth": 0.5,
 			"legendValueText": "[[value]]",
@@ -72,10 +102,10 @@ $json_data = json_encode($data);
 			"hideBulletsCount": 50,
 			"lineThickness": 2,
 			"lineColor": "#20acd4",
-			"type": "smoothedLine",
+			//"type": "smoothedLine",
 			"title": "2Performant",
 			"useLineColorForBulletBorder": true,
-			"valueField": "2p",
+			"valueField": "2Performant_sales_amount",
 			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
 		}, {
 			"id": "g3",
@@ -87,15 +117,144 @@ $json_data = json_encode($data);
 			"hideBulletsCount": 50,
 			"lineThickness": 2,
 			"lineColor": "#ff851b",
-			"type": "smoothedLine",
+			//"type": "smoothedLine",
 			//"dashLength": 5,
 			"title": "ProfitShare",
 			"useLineColorForBulletBorder": true,
-			"valueField": "ps",
+			"valueField": "ProfitShare_sales_amount",
 			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
 		}],
 		"chartScrollbar": {
 			"graph": "g1",
+			"oppositeAxis": false,
+			"offset": 30,
+			"scrollbarHeight": 50,
+			"backgroundAlpha": 0,
+			"selectedBackgroundAlpha": 0.1,
+			"selectedBackgroundColor": "#888888",
+			"graphFillAlpha": 0,
+			"graphLineAlpha": 0.5,
+			"selectedGraphFillAlpha": 0,
+			"selectedGraphLineAlpha": 1,
+			"autoGridCount": true,
+			"color": "#AAAAAA"
+		},
+		"chartCursor": {
+			"pan": true,
+			"valueLineEnabled": true,
+			"valueLineBalloonEnabled": true,
+			"cursorAlpha": 0,
+			"valueLineAlpha": 0.2
+		},
+		"categoryField": "date",
+		"categoryAxis": {
+			"parseDates": true,
+			"dashLength": 1,
+			"minorGridEnabled": true
+		},
+		"legend": {
+			"useGraphSettings": true,
+			"position": "top"
+		},
+		"balloon": {
+			"borderThickness": 1,
+			"shadowAlpha": 0
+		},
+		"export": {
+			"enabled": true
+		},
+		"dataProvider": <?php echo $json_data;?>
+	});
+
+
+	var chart_conversions = AmCharts.makeChart("chartdiv_conversions", {
+		"type": "serial",
+		// "dataLoader": {
+		// 	"url": "sales/chart01",
+		// 	"format": "json"
+		// },
+		"theme": "light",
+		"dataDateFormat": "YYYY-MM-DD",
+		"precision": 2,
+		"valueAxes": [
+		// {
+		// 	"id": "v1",
+		// 	"title": "Sales (LEI)",
+		// 	"position": "left",
+		// 	"autoGridCount": false,
+		// 	"labelFunction": function(value) {
+		// 		return "" + Math.round(value, 2) + "";
+		// 	}
+		// },
+		{
+			"id": "v2",
+			"title": "Nr. Conversions",
+			"gridAlpha": 0,
+			"position": "right",
+			"autoGridCount": false
+		}],
+		"graphs": [
+		// {
+		// 	"id": "g1",
+		// 	"valueAxis": "v1",
+		// 	"lineColor": "#e1ede9",
+		// 	"fillColors": "#e1ede9",
+		// 	"fillAlphas": 1,
+		// 	"type": "column",
+		// 	"title": "Total Sales",
+		// 	"valueField": "total_sales",
+		// 	"clustered": false,
+		// 	"columnWidth": 0.5,
+		// 	"legendValueText": "[[value]]",
+		// 	"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		// },
+		{
+			"id": "g2",
+			"valueAxis": "v2",
+			"lineColor": "#62cf73",
+			"fillColors": "#e1ede9",
+			"fillAlphas": 1,
+			"type": "column",
+			"title": "Total conversions",
+			"valueField": "total_conversions",
+			"clustered": false,
+			"columnWidth": 0.5,
+			"legendValueText": "[[value]]",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+			"id": "g3",
+			"valueAxis": "v2",
+			"bullet": "round",
+			"bulletBorderAlpha": 1,
+			"bulletColor": "#FFFFFF",
+			"bulletSize": 5,
+			"hideBulletsCount": 50,
+			"lineThickness": 2,
+			"lineColor": "#20acd4",
+			//"type": "smoothedLine",
+			"title": "2Performant",
+			"useLineColorForBulletBorder": true,
+			"valueField": "2Performant_sales_nr",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+			"id": "g4",
+			"valueAxis": "v2",
+			"bullet": "round",
+			"bulletBorderAlpha": 1,
+			"bulletColor": "#FFFFFF",
+			"bulletSize": 5,
+			"hideBulletsCount": 50,
+			"lineThickness": 2,
+			"lineColor": "#ff851b",
+			//"type": "smoothedLine",
+			//"dashLength": 5,
+			"title": "ProfitShare",
+			"useLineColorForBulletBorder": true,
+			"valueField": "ProfitShare_sales_nr",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}],
+		"chartScrollbar": {
+			"graph": "g2",
 			"oppositeAxis": false,
 			"offset": 30,
 			"scrollbarHeight": 50,
@@ -145,7 +304,7 @@ $json_data = json_encode($data);
 		<!-- LINE CHART -->
 		<div class="box box-info">
 			<div class="box-header with-border">
-				<h3 class="box-title">Performance</h3>
+				<h3 class="box-title">Sales Performance</h3>
 				
 				<div class="box-tools pull-right">
 					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -154,7 +313,29 @@ $json_data = json_encode($data);
 				</div>
 			</div>
 			<div class="box-body chart-responsive">
-				<div id="chartdiv"></div>
+				<div id="chartdiv_sales"></div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+		
+	</div>
+	
+	<div class="col-md-6">
+		
+		<!-- LINE CHART -->
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h3 class="box-title">Conversions Performance</h3>
+				
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				</div>
+			</div>
+			<div class="box-body chart-responsive">
+				<div id="chartdiv_conversions"></div>
 			</div>
 			<!-- /.box-body -->
 		</div>
@@ -163,6 +344,8 @@ $json_data = json_encode($data);
 	</div>
 </div>
 
+
+<div class="hidden_container hidden">
 <div class="row">
 	<div class="col-md-6">
 		<!-- AREA CHART -->
@@ -418,7 +601,8 @@ $json_data = json_encode($data);
         <!-- /.box -->
     </div>
 </div>
+</div>
 
-<?= $this->render('_expand-collapse') ?>
+<?if (0) echo $this->render('_expand-collapse'); ?>
 
 

@@ -5,7 +5,7 @@ use yii\db\Migration;
 /**
  * Class m171213_222417_payment
  */
-class m171213_222417_payment extends Migration
+class m171213_222417_stats extends Migration
 {
 
 
@@ -20,14 +20,12 @@ class m171213_222417_payment extends Migration
 	    // Conversion Time,Conversion Value,Google Click Id,Conversion Name
 
 	    // create tables. note the specific order
-	    $this->createTable('{{%payment}}', [
+	    $this->createTable('{{%stats}}', [
 		    'id' => Schema::TYPE_PK,
+		    'day' => Schema::TYPE_DATE . ' not null',
 		    'platform' => Schema::TYPE_STRING . ' not null',
-		    'conversion_date' => Schema::TYPE_DATETIME . ' not null',
-		    'conversion_value' => Schema::TYPE_DECIMAL . ' not null',
-		    'gclid' => Schema::TYPE_STRING . ' not null',
-		    'converion_name' =>  Schema::TYPE_STRING . ' not null',
-		    'created_at' => Schema::TYPE_DATETIME . ' not null',
+		    'nr_sales' => Schema::TYPE_DATETIME . ' not null',
+		    'sales_value' => Schema::TYPE_DECIMAL . ' not null',
 	    ], $tableOptions);
 	
 	    // add indexes for performance optimization
@@ -38,6 +36,6 @@ class m171213_222417_payment extends Migration
 
     public function down()
     {
-	    $this->dropTable('{{%payment}}');
+	    $this->dropTable('{{%stats}}');
     }
 }
