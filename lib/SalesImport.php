@@ -158,7 +158,7 @@ class SalesImport
                     'click_date' => $columns[3],
                     'conversion_date' => $columns[2],
                     'amount' => $columns[10] == 'Aprobat' ? $columns[7] : $columns[8],
-                    'referrer' => $columns[12],
+                    'referrer' => $columns[11],
                     'status' => $columns[10],
                 ];
                 $rows[] = $row;
