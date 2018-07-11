@@ -157,7 +157,6 @@ $(function () {
 				$.each(response.messages, function(index, value) {
 					$('.import-results .result-content').append($('<div>'+value+'</div>'));
 				});
-				$('.import-results .result-content').append($('<br>'));
 
 				if (response._platform) {
 					$('.import-results .result-content').append($('<div>Platform detected: <strong>'+response._platform+'</strong></div>'));

@@ -51,6 +51,7 @@ Status	in PS este coloana “Status” , in 2P este coloana “Status”
 			'conversion_date' => Schema::TYPE_DATETIME . ' not null',
 			'amount' =>  Schema::TYPE_DECIMAL.'(10, 2)' . ' not null',
 			'referrer' => Schema::TYPE_TEXT . ' not null',
+			'original_status' => Schema::TYPE_STRING . ' not null',
 			'status' => Schema::TYPE_STRING . ' not null',
 			'created_at' => Schema::TYPE_DATETIME . ' not null',
 		], $tableOptions);
@@ -61,6 +62,7 @@ Status	in PS este coloana “Status” , in 2P este coloana “Status”
 		$this->createIndex('{{%sale_advertiser}}', '{{%sale}}', 'advertiser', false);
 		$this->createIndex('{{%sale_click_date}}', '{{%sale}}', 'click_date', false);
 		$this->createIndex('{{%sale_conversion_date}}', '{{%sale}}', 'conversion_date', false);
+		$this->createIndex('{{%status}}', '{{%sale}}', 'status', false);
 		$this->createIndex('{{%sale_created_at}}', '{{%sale}}', 'created_at', false);
 
 	}
@@ -69,4 +71,10 @@ Status	in PS este coloana “Status” , in 2P este coloana “Status”
 		// drop tables in reverse order (for foreign key constraints)
 		$this->dropTable('{{%sale}}');
 	}
+	
+	/*
+		UPDATE `sale` set status = 'accepted' where `original_status` IN ('Aprobate', 'accepted', 'paid');
+		UPDATE `sale` set status = 'rejected' where `original_status` IN ('Anulate', 'rejected');
+		UPDATE `sale` set status = 'pending' where `original_status` IN ('In asteptare', 'pending');
+	 * */
 }

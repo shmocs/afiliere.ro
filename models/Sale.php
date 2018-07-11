@@ -15,13 +15,17 @@ use yii\helpers\ArrayHelper;
  *
  * @property int $id
  * @property string $platform
+ * @property string $platform_id
  * @property string $advertiser
  * @property string $click_date
  * @property string $conversion_date
  * @property string $amount
  * @property string $referrer
+ * @property string $original_status
  * @property string $status
  * @property string $created_at
+ * @property string $modified_at
+ * @property string $import_id
  */
 class Sale extends \yii\db\ActiveRecord
 {
@@ -39,10 +43,10 @@ class Sale extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['platform', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'], 'required'],
+            [['platform', 'platform_id', 'advertiser', 'click_date', 'conversion_date', 'amount', 'referrer', 'status', 'created_at'], 'required'],
             [['id', 'click_date', 'conversion_date', 'created_at', 'import_id'], 'safe'],
             [['amount'], 'number'],
-            [['platform', 'advertiser', 'referrer', 'status'], 'string', 'max' => 255],
+            [['platform', 'advertiser', 'referrer', 'original_status', 'status'], 'string', 'max' => 255],
 	        [['conversion_date'], 'match', 'pattern' => '/^.+\s\-\s.+$/'],
         ];
     }

@@ -43,7 +43,7 @@ class SalesImport
 	public function __construct($filename)
 	{
 		$result = [];
-		$this->messages[] = 'Processing file ['.$filename.']<br>';
+		$this->messages[] = 'Processing file ['.$filename.']<br><hr>';
 		
         $this->filepath = \Yii::getAlias('@webroot').'/jQueryFileUpload/server/php/files/'.$filename;
 		
@@ -73,6 +73,7 @@ class SalesImport
                     Records from <strong>'.$this->first_record.'</strong>
                     to <strong>'.$this->last_record.'</strong>.
 				';
+				$this->messages[] = '<hr>';
 				$result['messages'] = $this->messages;
                 
                 $result['type'] = $result['_failed'] > 0 ? 'error' : ($result['_duplicates'] > 0 ? ($result['_updated'] > 0 ? 'info' : 'warning') : 'success');
@@ -138,7 +139,8 @@ class SalesImport
 				'conversion_date'   => $this->utc_to_datetime($columns[11]),
 				'amount'            => $columns[6],
 				'referrer'          => $columns[15],
-				'status'            => $columns[7],
+				'original_status'   => $columns[7],
+				'status'            => $this->get_status($columns[7]),
 			];
 			
 			$rows[] = $row;
@@ -162,14 +164,15 @@ class SalesImport
                 //v1
                 //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
                 $row = [
-                    'platform' => 'ProfitShare',
-                    'platform_id' => $columns[1],
-                    'advertiser' => $columns[0],
-                    'click_date' => $columns[3],
-                    'conversion_date' => $columns[2],
-                    'amount' => $columns[10] == 'Aprobat' ? $columns[7] : $columns[8],
-                    'referrer' => $columns[11],
-                    'status' => $columns[10],
+                    'platform'          => 'ProfitShare',
+                    'platform_id'       => $columns[1],
+                    'advertiser'        => $columns[0],
+                    'click_date'        => $columns[3],
+                    'conversion_date'   => $columns[2],
+                    'amount'            => $columns[10] == 'Aprobat' ? $columns[7] : $columns[8],
+                    'referrer'          => $columns[11],
+                    'original_status'   => $columns[10],
+                    'status'            => $this->get_status($columns[10]),
                 ];
                 $rows[] = $row;
             }
@@ -179,14 +182,15 @@ class SalesImport
                 //v2
                 //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
                 $row = [
-                    'platform' => 'ProfitShare',
-                    'platform_id' => $columns[1],
-                    'advertiser' => $columns[0],
-                    'click_date' => $columns[3],
-                    'conversion_date' => $columns[2],
-                    'amount' => $columns[12] == 'Aprobate' ? $columns[8] : $columns[9],
-                    'referrer' => $columns[13],
-                    'status' => $columns[12],
+                    'platform'          => 'ProfitShare',
+                    'platform_id'       => $columns[1],
+                    'advertiser'        => $columns[0],
+                    'click_date'        => $columns[3],
+                    'conversion_date'   => $columns[2],
+                    'amount'            => $columns[12] == 'Aprobate' ? $columns[8] : $columns[9],
+                    'referrer'          => $columns[13],
+	                'original_status'   => $columns[12],
+	                'status'            => $this->get_status($columns[12]),
                 ];
 			    $rows[] = $row;
             }
@@ -195,6 +199,32 @@ class SalesImport
 		}
 		
 		$this->parsed_rows = $rows;
+	}
+	
+	
+	public function get_status($original_status) {
+		
+		$original_status = trim($original_status);
+		
+		$statuses = [
+			'Aprobate'      => 'accepted',
+			'accepted'      => 'accepted',
+			'paid'          => 'accepted',
+			
+			'Anulate'       => 'rejected',
+			'rejected'      => 'rejected',
+			
+			'In asteptare'  => 'pending',
+			'pending'       => 'pending',
+		];
+		
+		if (isset($statuses[$original_status])) {
+			$status = $statuses[$original_status];
+		} else {
+			$status = 'unknown';
+		}
+		
+		return $status;
 	}
 	
 	
@@ -214,7 +244,7 @@ class SalesImport
             ];
             
             try {
-                $sale = Yii::$app->db->createCommand('SELECT platform_id, status, amount FROM sale WHERE platform_id=:platform_id')
+                $sale = Yii::$app->db->createCommand('SELECT platform_id, original_status, status, amount FROM sale WHERE platform_id=:platform_id')
                     ->bindValues($params)
                     ->queryOne();
                 
@@ -225,9 +255,9 @@ class SalesImport
             
             if ($sale) {
 	            
-            	if ($sale['status'] != $record['status']) {
+            	if ($sale['original_status'] != $record['original_status']) {
 		            $this->to_update_rows[] = $record;
-		            //$this->messages[] = $record['platform_id'].': '.$sale['status'].'|'.$sale['amount'].' -> '.$record['status'].'|'.$record['amount'];
+		            $this->messages[] = $record['platform_id'].': '.$sale['status'].'('.$sale['original_status'].')|'.$sale['amount'].' -> '.$record['status'].'('.$record['original_status'].')|'.$record['amount'];
 	            } else {
 		            $this->duplicate_rows[] = $record;
 	            }
@@ -269,6 +299,7 @@ class SalesImport
                     'conversion_date'   => $record['conversion_date'],
                     'amount'            => $record['amount'],
                     'referrer'          => $record['referrer'],
+                    'original_status'   => $record['original_status'],
                     'status'            => $record['status'],
                     'import_id'         => $this->import_id,
                 ])->execute();
@@ -294,6 +325,7 @@ class SalesImport
                 	'sale',
 	                [
 	                    'amount'            => $record['amount'],
+	                    'original_status'   => $record['original_status'],
 	                    'status'            => $record['status'],
 	                    'import_id'         => $this->import_id,
                     ],
