@@ -328,6 +328,7 @@ class SalesImport
 	                    'original_status'   => $record['original_status'],
 	                    'status'            => $record['status'],
 	                    'import_id'         => $this->import_id,
+	                    'modified_at'       => date('Y-m-d H:i:s'),
                     ],
 	                [
 		                'platform_id'       => $record['platform_id'],

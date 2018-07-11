@@ -66,6 +66,7 @@ class Sale extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'platform' => 'Platform',
+            'platform_id' => 'Platform ID',
             'advertiser' => 'Advertiser',
             'click_date' => 'Click Date',
             'conversion_date' => 'Conversion Date',
@@ -138,6 +139,7 @@ class Sale extends \yii\db\ActiveRecord
 		
 		$query->andFilterWhere(['id' => $this->id]);
 		$query->andFilterWhere(['like', 'platform', $this->platform]);
+		$query->andFilterWhere(['like', 'platform_id', $this->platform_id]);
 		$query->andFilterWhere(['like', 'advertiser', $this->advertiser]);
 		$query->andFilterWhere(['click_date' => $this->click_date]);
 		//$query->andFilterWhere(['conversion_date' => $this->conversion_date]);

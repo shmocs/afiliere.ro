@@ -64,6 +64,12 @@ $columns = [
 		'width' => '4%',
 	],
 	[
+		'attribute' => 'platform_id',
+		'hAlign' => 'center',
+		'vAlign' => 'middle',
+		'width' => '4%',
+	],
+	[
 		'attribute' => 'platform',
 		'hAlign' => 'center',
 		'vAlign' => 'middle',
@@ -142,6 +148,15 @@ $columns = [
 		'hAlign' => 'center',
 		'vAlign' => 'middle',
 		'width' => '10%',
+		'value' => function ($model, $key, $index, $widget) {
+			if (!empty($model->modified_at)) {
+				$date = '<a data-toggle="tooltip" data-placement="left" data-html="true" title="Created at: '.$model->created_at.' Modified at: '.$model->modified_at.'"><i class="glyphicon glyphicon-edit"></i></a> '.$model->created_at.'';
+			} else {
+				$date = $model->created_at;
+			}
+			return $date;
+		},
+		'format' => 'raw',
 	],
 	[
 		'attribute' => 'import_id',

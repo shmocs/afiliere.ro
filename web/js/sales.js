@@ -16,6 +16,8 @@ $(function () {
 	});
 	*/
 
+	$('[data-toggle="tooltip"]').tooltip();
+
 	$('#add_sales').on('click', function (evt) {
 		//$('#sales-import-form')[0].reset();
 
