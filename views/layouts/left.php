@@ -17,7 +17,12 @@
 	    <?php
 	    //\yii\helpers\VarDumper::dump(Yii::$app->user);
 	    //\yii\helpers\VarDumper::dump(Yii::$app->controller->id);
-
+	    
+		$route66 = Yii::$app->controller->getRoute();
+		$parts = explode('/', $route66);
+		$controller = isset($parts[0]) ? $parts[0] : 'site';
+		$action = isset($parts[1]) ? $parts[1] : 'index';
+		
 	    $menu = [
 		    'options' => ['class' => 'sidebar-menu tree', 'data-widget'=> 'tree'],
 		    'items' => [
@@ -58,7 +63,22 @@
 				    'url' => '/sales/index',
 				    'visible' => true,
 				    'options' => [
-				        'class' => (Yii::$app->controller->id == 'sales') ? 'active' : '',
+				        'class' => (Yii::$app->controller->id == 'sales' && $action == 'index') ? 'active' : '',
+					],
+				    /*
+					'items' => [
+						['label' => '2Performant', 'icon' => '', 'url' => ['/sales/index?platform=2performant'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == '2performant') ? 'active' : ''],],
+						['label' => 'ProfitShare', 'icon' => '', 'url' => ['/sales/index?platform=profitshare'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'profitshare') ? 'active' : ''],],
+					],
+					*/
+			    ],
+			    [
+				    'label' => 'Reports',
+				    'icon' => 'th-list',
+				    'url' => '/sales/report',
+				    'visible' => true,
+				    'options' => [
+				        'class' => (Yii::$app->controller->id == 'sales' && $action == 'report') ? 'active' : '',
 					],
 				    /*
 					'items' => [

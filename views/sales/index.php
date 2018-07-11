@@ -136,6 +136,19 @@ $columns = [
 		'hAlign' => 'center',
 		'vAlign' => 'middle',
 		'width' => '7%',
+		'value' => function ($model, $key, $index, $widget) {
+			if ($model->status == 'accepted') {
+				$bg = 'green';
+			}
+			if ($model->status == 'pending') {
+				$bg = 'yellow';
+			}
+			if ($model->status == 'rejected') {
+				$bg = 'red';
+			}
+			return "<span class='label bg-{$bg}'>&nbsp;</span> <code>" . $model->status . '</code>';
+		},
+		'format' => 'raw',
 		'filterType' => GridView::FILTER_SELECT2,
 		'filter' => ArrayHelper::map(Sale::find()->orderBy('status')->asArray()->all(), 'status', 'status'),
 		'filterWidgetOptions' => [

@@ -37,6 +37,30 @@ class SalesController extends Controller
 	    );
     }
 
+    /**
+     * Displays report.
+     *
+     * @return string
+     */
+    public function actionReport()
+    {
+	    $searchModel = new Sale();
+	
+	    $params = Yii::$app->request->get();
+	
+	    $dataProvider = $searchModel->search($params);
+	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
+	    
+	    return $this->render(
+		    'index',
+		    [
+			    'dataProvider' => $dataProvider,
+			    'searchModel' => $searchModel,
+			    'model' => $searchModel,
+		    ]
+	    );
+    }
+
     public function actionImport()
     {
     	//'filename' => 'danielavaduva-commissions-all (7).csv'
