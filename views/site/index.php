@@ -41,19 +41,25 @@ $data = \app\models\Sale::getDataChart01();
 
 $json_data = json_encode($data);
 
+
+$profits_data = \yii\reports\Reports::getDataChartProfits();
+//\yii\helpers\VarDumper::dump($profits_data, 10, true);
+$profits_json = json_encode($profits_data);
+
 ?>
 
 <!-- Styles -->
 <style>
-	#chartdiv_sales, #chartdiv_conversions {
+	#chartdiv, #chartdiv_sales, #chartdiv_conversions, #chartdiv_profit {
 		width: 100%;
-		height: 500px;
+		height: 400px;
 	}
 </style>
 
 <!-- Resources -->
 <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
 <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+<script src="https://www.amcharts.com/lib/3/amstock.js"></script>
 <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
 <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
 <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
@@ -163,9 +169,35 @@ $json_data = json_encode($data);
 		"export": {
 			"enabled": true
 		},
+
+		"periodSelector": {
+			"position": "top",
+			"dateFormat": "YYYY-MM-DD",
+			"inputFieldWidth": 100,
+			"periods": [{
+				"period": "DD",
+				"count": 1,
+				"label": "1 day"
+			}, {
+				"period": "DD",
+				"count": 7,
+				"label": "1 week",
+			}, {
+				"period": "MM",
+				"count": 1,
+				"label": "1 month"
+			}, {
+				"period": "MM",
+				"count": 3,
+				"label": "3 months"
+			}, {
+				"period": "MAX",
+				"label": "MAX"
+			}]
+		},
+		
 		"dataProvider": <?php echo $json_data;?>
 	});
-
 
 	var chart_conversions = AmCharts.makeChart("chartdiv_conversions", {
 		"type": "serial",
@@ -215,7 +247,7 @@ $json_data = json_encode($data);
 			"fillColors": "#e1ede9",
 			"fillAlphas": 1,
 			"type": "column",
-			"title": "Total conversions",
+			"title": "Conversions",
 			"valueField": "total_conversions",
 			"clustered": false,
 			"columnWidth": 0.5,
@@ -294,6 +326,300 @@ $json_data = json_encode($data);
 		},
 		"dataProvider": <?php echo $json_data;?>
 	});
+
+
+
+
+	var chart_profit = AmCharts.makeChart("chartdiv_profit", {
+		"type": "serial",
+		"theme": "light",
+		
+		"precision": 2,
+		"valueAxes": [{
+			"id": "v1",
+			"title": "LEI",
+			"position": "left",
+			"autoGridCount": false,
+			"labelFunction": function(value) {
+				return "" + Math.round(value, 2) + "";
+			},
+		}],
+		"graphs": [{
+			"id": "g1",
+			"valueAxis": "v1",
+			"lineColor": "#e1ede9",
+			"fillColors": "#e1ede9",
+			"fillAlphas": 1,
+			"type": "column",
+			"title": "Sales",
+			"valueField": "sales",
+			"clustered": false,
+			"columnWidth": 0.7,
+			"legendValueText": "[[value]]",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+
+			"id": "g2",
+			"valueAxis": "v1",
+			"lineColor": "#62cf73",
+			"fillColors": "#62cf73",
+			"fillAlphas": 1,
+			"type": "column",
+			"title": "Costs",
+			"valueField": "costs",
+			"clustered": false,
+			"columnWidth": 0.4,
+			"legendValueText": "[[value]]",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+
+
+			"id": "g3",
+			"valueAxis": "v1",
+			"bullet": "round",
+			"bulletBorderAlpha": 1,
+			"bulletColor": "#FFFFFF",
+			"bulletSize": 5,
+			"hideBulletsCount": 50,
+			"lineThickness": 2,
+			"lineColor": "#20acd4",
+			//"type": "smoothedLine",
+			"title": "Profit",
+			"useLineColorForBulletBorder": true,
+			"valueField": "profit",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}],
+		"chartScrollbar": {
+			"graph": "g1",
+			"oppositeAxis": false,
+			"offset": 30,
+			"scrollbarHeight": 50,
+			"backgroundAlpha": 0,
+			"selectedBackgroundAlpha": 0.1,
+			"selectedBackgroundColor": "#888888",
+			"graphFillAlpha": 0,
+			"graphLineAlpha": 0.5,
+			"selectedGraphFillAlpha": 0,
+			"selectedGraphLineAlpha": 1,
+			"autoGridCount": true,
+			"color": "#AAAAAA"
+		},
+		"chartCursor": {
+			"pan": true,
+			"valueLineEnabled": true,
+			"valueLineBalloonEnabled": true,
+			"cursorAlpha": 0.1,
+			"valueLineAlpha": 0.5
+		},
+		"categoryField": "date",
+		"categoryAxis": {
+			//"parseDates": true,
+			//"dashLength": 1,
+			//"minorGridEnabled": true
+			"labelRotation": 45
+		},
+		"legend": {
+			"useGraphSettings": true,
+			"position": "top"
+		},
+		"balloon": {
+			"borderThickness": 1,
+			"shadowAlpha": 0
+		},
+		"export": {
+			"enabled": true
+		},
+		"dataProvider": <?php echo $profits_json;?>
+	});
+
+
+
+
+	<!-- Chart code -->
+
+	var chartData1 = [];
+	var chartData2 = [];
+	var chartData3 = [];
+	var chartData4 = [];
+
+	generateChartData();
+
+	function generateChartData() {
+		var firstDate = new Date();
+		firstDate.setDate( firstDate.getDate() - 500 );
+		firstDate.setHours( 0, 0, 0, 0 );
+
+		var a1 = 1500;
+		var b1 = 1500;
+		var a2 = 1700;
+		var b2  = 1700;
+		var a3 = 1600;
+		var b3 = 1600;
+		var a4 = 1400;
+		var b4 = 1400;
+
+		for ( var i = 0; i < 500; i++ ) {
+			var newDate = new Date( firstDate );
+			newDate.setDate( newDate.getDate() + i );
+
+			a1 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+			b1 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+
+			a2 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+			b2 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+
+			a3 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+			b3 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+
+			a4 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+			b4 += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
+
+			chartData1.push( {
+				"date": newDate,
+				"value": a1,
+				"volume": b1 + 1500
+			} );
+			chartData2.push( {
+				"date": newDate,
+				"value": a2,
+				"volume": b2 + 1500
+			} );
+			chartData3.push( {
+				"date": newDate,
+				"value": a3,
+				"volume": b3 + 1500
+			} );
+			chartData4.push( {
+				"date": newDate,
+				"value": a4,
+				"volume": b4 + 1500
+			} );
+		}
+	};
+
+	if (0)
+	var chart = AmCharts.makeChart( "chartdiv", {
+		"type": "stock",
+		"theme": "light",
+		"dataSets": [ {
+			"title": "first data set",
+			"fieldMappings": [ {
+				"fromField": "value",
+				"toField": "value"
+			}, {
+				"fromField": "volume",
+				"toField": "volume"
+			} ],
+			"dataProvider": chartData1,
+			"categoryField": "date"
+		}, {
+			"title": "second data set",
+			"fieldMappings": [ {
+				"fromField": "value",
+				"toField": "value"
+			}, {
+				"fromField": "volume",
+				"toField": "volume"
+			} ],
+			"dataProvider": chartData2,
+			"categoryField": "date"
+		}, {
+			"title": "third data set",
+			"fieldMappings": [ {
+				"fromField": "value",
+				"toField": "value"
+			}, {
+				"fromField": "volume",
+				"toField": "volume"
+			} ],
+			"dataProvider": chartData3,
+			"categoryField": "date"
+		}, {
+			"title": "fourth data set",
+			"fieldMappings": [ {
+				"fromField": "value",
+				"toField": "value"
+			}, {
+				"fromField": "volume",
+				"toField": "volume"
+			} ],
+			"dataProvider": chartData4,
+			"categoryField": "date"
+		}
+		],
+
+		"panels": [ {
+			"showCategoryAxis": false,
+			"title": "Value",
+			"percentHeight": 70,
+			"stockGraphs": [ {
+				"id": "g1",
+				"valueField": "value",
+				"comparable": true,
+				"compareField": "value",
+				"balloonText": "[[title]]:<b>[[value]]</b>",
+				"compareGraphBalloonText": "[[title]]:<b>[[value]]</b>"
+			} ],
+			"stockLegend": {
+				"periodValueTextComparing": "[[percents.value.close]]%",
+				"periodValueTextRegular": "[[value.close]]"
+			}
+		}, {
+			"title": "Volume",
+			"percentHeight": 30,
+			"stockGraphs": [ {
+				"valueField": "volume",
+				"type": "column",
+				"showBalloon": false,
+				"fillAlphas": 1
+			} ],
+			"stockLegend": {
+				"periodValueTextRegular": "[[value.close]]"
+			}
+		} ],
+
+		"chartScrollbarSettings": {
+			"graph": "g1"
+		},
+
+		"chartCursorSettings": {
+			"valueBalloonsEnabled": true,
+			"fullWidth": true,
+			"cursorAlpha": 0.1,
+			"valueLineBalloonEnabled": true,
+			"valueLineEnabled": true,
+			"valueLineAlpha": 0.5
+		},
+
+		"periodSelector": {
+			"position": "left",
+			"periods": [ {
+				"period": "MM",
+				"selected": true,
+				"count": 1,
+				"label": "1 month"
+			}, {
+				"period": "YYYY",
+				"count": 1,
+				"label": "1 year"
+			}, {
+				"period": "YTD",
+				"label": "YTD"
+			}, {
+				"period": "MAX",
+				"label": "MAX"
+			} ]
+		},
+
+		"dataSetSelector": {
+			"position": "top"
+		},
+
+		"export": {
+			"enabled": true
+		}
+	} );
+	
 </script>
 
 
@@ -336,6 +662,53 @@ $json_data = json_encode($data);
 			</div>
 			<div class="box-body chart-responsive">
 				<div id="chartdiv_conversions"></div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+		
+	</div>
+</div>
+
+
+<div class="row">
+	<div class="col-md-6">
+		
+		<!-- LINE CHART -->
+		<div class="box box-success">
+			<div class="box-header with-border">
+				<h3 class="box-title">Profits</h3>
+				
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				</div>
+			</div>
+			<div class="box-body chart-responsive">
+				<div id="chartdiv_profit"></div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+		
+	</div>
+	
+	<div class="col-md-6">
+		
+		<!-- LINE CHART -->
+		<div class="box box-warning">
+			<div class="box-header with-border">
+				<h3 class="box-title">Best Graph</h3>
+				
+				<div class="box-tools pull-right">
+					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+					</button>
+					<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+				</div>
+			</div>
+			<div class="box-body chart-responsive">
+				<div id="chartdiv"></div>
 			</div>
 			<!-- /.box-body -->
 		</div>

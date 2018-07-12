@@ -9,6 +9,7 @@ require __DIR__ . '/../vendor/yiisoft/yii2/Yii.php';
 
 require_once __DIR__ . '/../lib/SalesImport.php';
 require_once __DIR__ . '/../lib/CostsImport.php';
+require_once __DIR__ . '/../lib/Reports.php';
 
 $config = require __DIR__ . '/../config/web.php';
 
