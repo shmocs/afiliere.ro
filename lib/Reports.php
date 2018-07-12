@@ -36,6 +36,7 @@ class Reports
                     SUM(`amount`) as `monthly_total`,
                     'sale' AS `value_type`
                 FROM `sale`
+                WHERE `status` = 'accepted'
                 GROUP BY YM
                 
             ) UNION ALL (
