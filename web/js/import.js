@@ -1,4 +1,7 @@
 
+var import_finished = false;
+var import_type; //sale/cost
+
 $(function () {
 
 	$('.overlay').hide();
@@ -53,6 +56,9 @@ $(function () {
 			}
 			node.appendTo(data.context);
 		});
+
+
+
 	}).on('fileuploadprocessalways', function (e, data) {
 		var index = data.index,
 			file = data.files[index],
@@ -127,7 +133,7 @@ $(function () {
 		$('.import-results').removeClass('hide');
 
 		$.ajax({
-			url			: '/sales/import',
+			url			: '/'+import_type+'/import',
 			type   		: 'POST',
 			dataType 	: 'json',
 			data   		: {filename: filename},

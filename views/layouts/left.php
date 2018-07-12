@@ -73,6 +73,15 @@
 					*/
 			    ],
 			    [
+				    'label' => 'Costs',
+				    'icon' => 'money',
+				    'url' => '/costs/index',
+				    'visible' => true,
+				    'options' => [
+				        'class' => (Yii::$app->controller->id == 'costs' && $action == 'index') ? 'active' : '',
+					],
+			    ],
+			    [
 				    'label' => 'Reports',
 				    'icon' => 'th-list',
 				    'url' => '/sales/report',

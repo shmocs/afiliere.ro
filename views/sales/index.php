@@ -130,6 +130,7 @@ $columns = [
 			return '<div style="overflow-x: scroll; width: 100%; max-width: 250px; white-space: nowrap;">'.$model->referrer.'</div>';
 		},
 		'format' => 'raw',
+		'width' => '15%',
 	],
 	[
 		'attribute' => 'status',
@@ -150,7 +151,7 @@ $columns = [
 		},
 		'format' => 'raw',
 		'filterType' => GridView::FILTER_SELECT2,
-		'filter' => ArrayHelper::map(Sale::find()->orderBy('status')->asArray()->all(), 'status', 'status'),
+		'filter' => ArrayHelper::map(Sale::find()->select('status')->distinct()->asArray()->all(), 'status', 'status'),
 		'filterWidgetOptions' => [
 			'pluginOptions' => ['allowClear' => true],
 		],
@@ -187,7 +188,7 @@ $columns = [
 			return '<div style="overflow-x: auto; width: 100%; max-width: 300px; white-space: nowrap;">'.$a_dld.$a_filter.'</div>';
 		},
 		'filterType' => GridView::FILTER_SELECT2,
-		'filter' => ArrayHelper::map(Import::find()->orderBy('created_at DESC')->asArray()->all(), 'id', 'filename'),
+		'filter' => ArrayHelper::map(Import::find()->where(['type' => 'sale'])->orderBy('created_at DESC')->asArray()->all(), 'id', 'filename'),
 		'filterWidgetOptions' => [
 			'pluginOptions' => ['allowClear' => true],
 		],

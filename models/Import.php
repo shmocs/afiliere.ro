@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "import".
  *
  * @property int $id
+ * @property string $type
  * @property string $filename
  * @property string $created_at
  */
@@ -27,9 +28,9 @@ class Import extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['filename'], 'required'],
-            [['created_at'], 'safe'],
-            [['filename'], 'string', 'max' => 255],
+            [['filename', 'type'], 'required'],
+            [['created_at', 'type'], 'safe'],
+            [['filename', 'type'], 'string', 'max' => 255],
         ];
     }
 
@@ -40,8 +41,18 @@ class Import extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'type' => 'Type',
             'filename' => 'Filename',
             'created_at' => 'Created At',
         ];
     }
+	
+	public function getCosts()
+	{
+		return $this->hasMany(Cost::class, ['import_id' => 'id']);
+	}
+	public function getSales()
+	{
+		return $this->hasMany(Sale::class, ['import_id' => 'id']);
+	}
 }

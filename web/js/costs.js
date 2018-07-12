@@ -1,35 +1,15 @@
 
 
 $(function () {
-	//$('.sidebar-toggle').click();
 
-	/*
-	$('#example1').DataTable();
-	$('#example2').DataTable({
-		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false
-	});
-	*/
-
-	$('[data-toggle="tooltip"]').tooltip();
-
-	$('#add_sales').on('click', function (evt) {
+	$('#add_costs').on('click', function (evt) {
 		//$('#sales-import-form')[0].reset();
 
 		$('.fileinput-button').show();
 		$('#progress .progress-bar').css('width', '0%');
 		$('.files').html('');
 
-		import_type = 'sales';
-	});
-
-
-	$('.test-btn').on('click', function () {
-		$("#w4").yiiGridView("applyFilter");
+		import_type = 'costs';
 	});
 
 

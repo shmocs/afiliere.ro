@@ -276,6 +276,7 @@ class SalesImport
 		
 		try {
 			$import = new Import();
+			$import->type = 'sale';
 			$import->filename = $this->filename;
 			if (!$import->save()) {
 				$this->messages[] = 'Import not created';

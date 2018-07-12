@@ -26,6 +26,7 @@ class AppAsset extends AssetBundle
     public $js = [
     	'js/main.js',
     	'js/sales.js',
+    	'js/costs.js',
     	'jQueryFileUpload/js/jquery.fileupload.js',
     	'jQueryFileUpload/js/jquery.fileupload-process.js',
     	'jQueryFileUpload/js/jquery.fileupload-validate.js',
