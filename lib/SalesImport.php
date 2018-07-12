@@ -163,6 +163,7 @@ class SalesImport
             if ($columns[13] == 'link') {
                 //v1
                 //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
+                
                 $row = [
                     'platform'          => 'ProfitShare',
                     'platform_id'       => $columns[1],
@@ -181,13 +182,17 @@ class SalesImport
             if ($columns[15] == 'link') {
                 //v2
                 //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
+                //Aloshop.tv,C7LP-996715510,"2017-11-06 19:18:40","2017-11-06 19:02:18","In asteptare","2017-11-13 15:14:22","Comision comanda",1,0.00,0,23.02,209.24,Anulate,http://pmark.ro/aloshop/https://aloshop.tv/sanatate-si-frumusete/vitarid-r?gclid=Cj0KCQiArYDQBRDoARIsAMR8s_QLhS2YlPjfnpZNScINjbmxMoldxp4irgEeleyEkCUzcoHZNSMK1akaAk3zEALw_wcB,"0 zile",link,AloShop.tv,desktop,Windows,7,,,Chrome
+                //Aloshop.tv,C7LP-996735702,"2017-11-25 08:00:37","2017-11-24 08:21:20","2017-12-06 18:30:05","2017-12-06 18:30:05","Comision comanda",1,23.02,0,23.02,209.24,Aprobate,http://pmark.ro/aloshop/https://aloshop.tv/sanatate-si-frumusete/vitarid-r?gclid=Cj0KCQiAgNrQBRC0ARIsAE-m-1xIpPV_wWGyIZwmgdDq7sJpk2CPPn_q_1DAxlsUK1Tk0qalZhF2qcEaApfHEALw_wcB,"1 zi",link,AloShop.tv,mobile,Android,6.0,Sony,"Xperia Z2","Chrome Mobile"
+    
+    
                 $row = [
                     'platform'          => 'ProfitShare',
                     'platform_id'       => $columns[1],
                     'advertiser'        => $columns[0],
                     'click_date'        => $columns[3],
                     'conversion_date'   => $columns[2],
-                    'amount'            => $columns[12] == 'Aprobate' ? $columns[8] : $columns[9],
+                    'amount'            => $columns[12] == 'Aprobate' ? $columns[8] : ('Anulate' ? $columns[10] : $columns[9]),
                     'referrer'          => $columns[13],
 	                'original_status'   => $columns[12],
 	                'status'            => $this->get_status($columns[12]),
