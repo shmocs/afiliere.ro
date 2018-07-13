@@ -84,17 +84,17 @@
 			    [
 				    'label' => 'Reports',
 				    'icon' => 'th-list',
-				    'url' => '/sales/report',
+				    'url' => '/report/index',
 				    'visible' => true,
 				    'options' => [
-				        'class' => (Yii::$app->controller->id == 'sales' && $action == 'report') ? 'active' : '',
+				        'class' => (Yii::$app->controller->id == 'report') ? 'active' : '',
 					],
-				    /*
+				 
 					'items' => [
-						['label' => '2Performant', 'icon' => '', 'url' => ['/sales/index?platform=2performant'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == '2performant') ? 'active' : ''],],
-						['label' => 'ProfitShare', 'icon' => '', 'url' => ['/sales/index?platform=profitshare'], 'options' => ['class' => ( isset($_GET['platform']) && $_GET['platform'] == 'profitshare') ? 'active' : ''],],
+						['label' => 'Global', 'icon' => '', 'url' => ['/report/index'], 'options' => ['class' => ( $controller == 'report' && $action == 'index' ) ? 'active' : ''],],
+						['label' => 'Advertiser', 'icon' => '', 'url' => ['/report/advertiser'], 'options' => ['class' => ( $controller == 'report' && $action == 'advertiser') ? 'active' : ''],],
 					],
-					*/
+					
 			    ],
 			    [
 				    'label' => 'Export',

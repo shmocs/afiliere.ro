@@ -10,7 +10,7 @@ use yii\sales\SalesImport;
 use yii\web\Controller;
 use yii\web\Response;
 
-class SalesController extends Controller
+class ReportController extends Controller
 {
 
     /**
@@ -37,30 +37,28 @@ class SalesController extends Controller
 	    );
     }
 
-    public function actionImport()
+    /**
+     * Displays report.
+     *
+     * @return string
+     */
+    public function actionAdvertiser()
     {
-    	//'filename' => 'danielavaduva-commissions-all (7).csv'
-	    //VarDumper::dump($_POST);
-	    
-	    $response = [
-	    	'type' => 'success',
-		    'messages' => [],
-	    ];
-	    
-	    if (isset($_POST['filename'])) {
-
-	    	
-	    	$import = new SalesImport($_POST['filename']);
-	    	
-		    $response = $import->result;
-		    
-	    } else {
-		    $response['messages'][] = 'File missing !';
-		    $response['type'] = 'error';
-	    }
+	    $searchModel = new Sale();
 	
-	    echo json_encode($response);
-	    die();
+	    $params = Yii::$app->request->get();
+	
+	    $dataProvider = $searchModel->search($params);
+	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
+	    
+	    return $this->render(
+		    'advertiser',
+		    [
+			    'dataProvider' => $dataProvider,
+			    'searchModel' => $searchModel,
+			    'model' => $searchModel,
+		    ]
+	    );
     }
 
 }
