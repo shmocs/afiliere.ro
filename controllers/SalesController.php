@@ -52,7 +52,7 @@ class SalesController extends Controller
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
 	    
 	    return $this->render(
-		    'index',
+		    'report',
 		    [
 			    'dataProvider' => $dataProvider,
 			    'searchModel' => $searchModel,
