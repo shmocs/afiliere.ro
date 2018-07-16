@@ -3,18 +3,6 @@
 $(function () {
 	//$('.sidebar-toggle').click();
 
-	/*
-	$('#example1').DataTable();
-	$('#example2').DataTable({
-		'paging'      : true,
-		'lengthChange': false,
-		'searching'   : false,
-		'ordering'    : true,
-		'info'        : true,
-		'autoWidth'   : false
-	});
-	*/
-
 	$('[data-toggle="tooltip"]').tooltip();
 
 	$('#add_sales').on('click', function (evt) {

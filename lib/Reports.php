@@ -92,4 +92,110 @@ class Reports
         
         return $data;
     }
+    
+    
+    public static function getGlobalReport($date_type = 'click_date') {
+	
+		$report_rows = [];
+	
+		$start = '2018-01-01';
+		$end = '2018-07-07';
+		
+	    $sql = "
+			SELECT
+        		`c`.`advertiser`,
+        		SUM(`c`.`cost`) AS `cost`
+        		
+            FROM `cost` `c`
+            WHERE 1
+            	AND `c`.`campaign_date` BETWEEN '{$start}' AND '{$end}'
+            GROUP BY `c`.`advertiser`
+        	ORDER BY `c`.`advertiser` ASC
+		";
+	    $costs = Yii::$app->db->createCommand($sql)->queryAll();
+	    //\yii\helpers\VarDumper::dump($costs, 10, true);
+		
+	    $sql = "
+			SELECT
+        		`s`.`advertiser`,
+        		
+            	(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'accepted') AS `valoare_comisioane_aprobate`,
+            	(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'pending') AS `valoare_comisioane_asteptare`,
+            	(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'rejected') AS `valoare_comisioane_anulate`,
+           		(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser`) AS `valoare_comisioane_total`,
+           		
+           		(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'accepted') AS `volum_comisioane_aprobate`,
+            	(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'pending') AS `volum_comisioane_asteptare`,
+            	(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'rejected') AS `volum_comisioane_anulate`,
+           		(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser`) AS `volum_comisioane_total`
+        		
+            FROM `sale` `s`
+            WHERE 1
+            	AND `s`.`{$date_type}` BETWEEN '{$start}' AND '{$end}'
+            GROUP BY `s`.`advertiser`
+        	ORDER BY `s`.`advertiser` ASC
+		";
+	    $sales = Yii::$app->db->createCommand($sql)->queryAll();
+	    //\yii\helpers\VarDumper::dump($sql, 10, true);
+	    //\yii\helpers\VarDumper::dump($sales, 10, true);
+		
+	    
+	    $sql = "
+		SELECT
+			`virt`.`advertiser`,
+			AVG(`virt`.`valoare_comisioane_aprobate`) AS `valoare_comisioane_aprobate_avg`,
+			AVG(`virt`.`valoare_comisioane_anulate`) AS `valoare_comisioane_anulate_avg`,
+			
+			AVG(`virt`.`volum_comisioane_aprobate`) AS `volum_comisioane_aprobate_avg`,
+			AVG(`virt`.`volum_comisioane_anulate`) AS `volum_comisioane_anulate_avg`
+		FROM (
+			SELECT
+        		`s`.`advertiser`,
+        		
+            	(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'accepted') AS `valoare_comisioane_aprobate`,
+            	(SELECT SUM(`s1`.`amount`) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'rejected') AS `valoare_comisioane_anulate`,
+           		
+           		(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'accepted') AS `volum_comisioane_aprobate`,
+            	(SELECT SUM(1) FROM `sale` `s1` WHERE `s1`.`advertiser` = `s`.`advertiser` AND `s1`.`status` = 'rejected') AS `volum_comisioane_anulate`
+        		
+            FROM `sale` `s`
+            WHERE 1
+            	AND `s`.`{$date_type}` BETWEEN NOW() - INTERVAL 4 MONTH AND NOW()
+            GROUP BY `s`.`advertiser`
+        	-- ORDER BY `s`.`advertiser` ASC
+        ) `virt`
+        GROUP BY `virt`.`advertiser`
+		";
+	    $averages = Yii::$app->db->createCommand($sql)->queryAll(\PDO::FETCH_ASSOC);
+	    //\yii\helpers\VarDumper::dump($sql, 10, true);
+	    //\yii\helpers\VarDumper::dump($averages, 10, true);
+
+	    
+	    $report = [];
+	    
+	    foreach ($costs as $cost) {
+	    	$advertiser = strtolower($cost['advertiser']);
+	    	$report[$advertiser] = [
+	    		'cost' => $cost['cost']
+		    ];
+	    }
+	    
+	    foreach ($sales as $sale) {
+		    $advertiser = strtolower($sale['advertiser']);
+	    	if (!isset($report[$advertiser])) $report[$advertiser] = [];
+	    	$report[$advertiser] += $sale;
+	    }
+	    
+	    foreach ($averages as $average) {
+		    $advertiser = strtolower($average['advertiser']);
+	    	if (!isset($report[$advertiser])) $report[$advertiser] = [];
+	    	$report[$advertiser] += $average;
+	    }
+	    
+	    
+	    
+	    \yii\helpers\VarDumper::dump($report, 10, true);
+	
+	    return $report;
+    }
 }

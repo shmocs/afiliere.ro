@@ -40,8 +40,6 @@ if (Yii::$app->controller->action->id === 'login') {
 	    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 	    <link rel="shortcut icon" href="/images/favicon.jpg" title="Favicon" />
 	
-	    <script type='text/javascript' src='https://www.amcharts.com/lib/3/amcharts.js?ver=20180522-01'></script>
-	    
         <?php $this->head() ?>
     </head>
     <body class="hold-transition skin-blue sidebar-mini">
