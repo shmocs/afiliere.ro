@@ -175,7 +175,8 @@ $resultData = [
 
 $dataProvider = new \yii\data\ArrayDataProvider([
     //'key'=>'id',
-    'allModels' => $resultData,
+    //'allModels' => $resultData,
+    'allModels' => $dataProvider,
     'sort' => [
         //'attributes' => ['id', 'name', 'email'],
     ],

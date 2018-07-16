@@ -94,12 +94,8 @@ class Reports
     }
     
     
-    public static function getGlobalReport($date_type = 'click_date') {
-	
-		$report_rows = [];
-	
-		$start = '2018-01-01';
-		$end = '2018-07-07';
+    public static function getGlobalReport($date_type = 'click_date', $start_date, $end_date) {
+    
 		
 	    $sql = "
 			SELECT
@@ -108,7 +104,7 @@ class Reports
         		
             FROM `cost` `c`
             WHERE 1
-            	AND `c`.`campaign_date` BETWEEN '{$start}' AND '{$end}'
+            	AND `c`.`campaign_date` BETWEEN '{$start_date}' AND '{$end_date}'
             GROUP BY `c`.`advertiser`
         	ORDER BY `c`.`advertiser` ASC
 		";
@@ -131,13 +127,38 @@ class Reports
         		
             FROM `sale` `s`
             WHERE 1
-            	AND `s`.`{$date_type}` BETWEEN '{$start}' AND '{$end}'
+            	AND `s`.`{$date_type}` BETWEEN '{$start_date}' AND '{$end_date}'
             GROUP BY `s`.`advertiser`
         	ORDER BY `s`.`advertiser` ASC
 		";
+	    $sql = "
+			SELECT
+        		`advertiser`,
+            	`valoare_comisioane_aprobate`,
+            	`valoare_comisioane_asteptare`,
+            	`valoare_comisioane_anulate`
+            FROM (
+                SELECT
+                    `s`.`advertiser`,
+                    IFNULL( SUM( CASE WHEN `s2`.`status` = 'accepted' THEN `s2`.`amount` END ), 0) AS `valoare_comisioane_aprobate`,
+                    IFNULL( SUM( CASE WHEN `s2`.`status` = 'pending' THEN `s2`.`amount` END ), 0) AS `valoare_comisioane_asteptare`,
+                    IFNULL( SUM( CASE WHEN `s2`.`status` = 'rejected' THEN `s2`.`amount` END ), 0) AS `valoare_comisioane_anulate`
+                FROM `sale` `s`
+                LEFT JOIN
+                (
+                    SELECT * FROM `sale`
+                ) AS `s2` ON `s`.`id` = `s2`.`id` AND `s`.`{$date_type}` BETWEEN '{$start_date}' AND '{$end_date}'
+                WHERE 1
+                
+                GROUP BY `s`.`advertiser`
+                
+            ) AS `sums`
+
+        	ORDER BY `advertiser` ASC
+		";
 	    $sales = Yii::$app->db->createCommand($sql)->queryAll();
 	    //\yii\helpers\VarDumper::dump($sql, 10, true);
-	    //\yii\helpers\VarDumper::dump($sales, 10, true);
+	    \yii\helpers\VarDumper::dump($sales, 10, true);
 		
 	    
 	    $sql = "
@@ -166,10 +187,10 @@ class Reports
         ) `virt`
         GROUP BY `virt`.`advertiser`
 		";
-	    $averages = Yii::$app->db->createCommand($sql)->queryAll(\PDO::FETCH_ASSOC);
+	    //$averages = Yii::$app->db->createCommand($sql)->queryAll(\PDO::FETCH_ASSOC);
 	    //\yii\helpers\VarDumper::dump($sql, 10, true);
 	    //\yii\helpers\VarDumper::dump($averages, 10, true);
-
+        $averages = [];
 	    
 	    $report = [];
 	    
@@ -191,10 +212,6 @@ class Reports
 	    	if (!isset($report[$advertiser])) $report[$advertiser] = [];
 	    	$report[$advertiser] += $average;
 	    }
-	    
-	    
-	    
-	    \yii\helpers\VarDumper::dump($report, 10, true);
 	
 	    return $report;
     }

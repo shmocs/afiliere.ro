@@ -27,14 +27,27 @@ class ReportController extends Controller
 	    if (isset($params['date_type'])) {
 	    	$date_type = $params['date_type'];
 	    }
+	
+	    $start_date = date('Y-m-d H:i:s', strtotime('last month'));
+        $end_date = date('Y-m-d H:i:s');
+        $start_date = '2018-06-01';
+        $end_date = '2018-07-01';
 	    
-	    $dataProvider = Reports::getGlobalReport($date_type);
+	    if (isset($params['start_date'])) {
+	    	$start_date = $params['start_date'];
+	    }
+	    if (isset($params['end_date'])) {
+	    	$end_date = $params['end_date'];
+	    }
+    
+	    
+	    $dataProvider = Reports::getGlobalReport($date_type, $start_date, $end_date);
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
 	    
 	    return $this->render(
 		    'index',
 		    [
-			    //'dataProvider' => $dataProvider,
+			    'dataProvider' => $dataProvider,
 		    ]
 	    );
     }
