@@ -8,7 +8,7 @@ $this->registerJs('$(\'.sidebar-toggle\').click();');
 
 use yii\helpers\Html;
 use yii\helpers\Url;
-
+use kartik\daterange\DateRangePicker;
 
 use yii\helpers\VarDumper;
 use kartik\grid\GridView;
@@ -193,9 +193,40 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 				
 				<div class="box">
 					<div class="box-header">
-						<h3 class="box-title"><i class="fa fa-th-list"></i> Global report</h3>
-						<div class="pull-right">
-							Search control
+						<h3 class="box-title pull-left"><i class="fa fa-th-list"></i> Global report</h3>
+						
+						<div class="pull-left col-md-2">
+							<select name="date_type" id="date_type">
+								<option value="click_date" <?php if ($date_type == 'click_date') echo 'selected="selected"';?>>Click Date</option>
+								<option value="conversion_date" <?php if ($date_type == 'conversion_date') echo 'selected="selected"';?>>Conversion Date</option>
+							</select>
+						</div>
+						
+						<div class="pull-right col-md-3">
+							
+								<div class="drp-container col-md-10">
+									<?php
+									echo DateRangePicker::widget([
+										'name'=>'date_range',
+										'value' => $date_range,
+										'presetDropdown'=>true,
+										'hideInput'=>true,
+										
+										'pluginOptions' => [
+											'locale' => [
+												'cancelLabel' => 'Clear',
+												'format' => 'YYYY-MM-DD',
+											]
+										],
+									
+									]);
+									?>
+								</div>
+								<div class="col-md-2">
+									
+									<a href="#" class="btn btn-primary filter_date_range">Submit</a>
+								</div>
+
 						</div>
 					</div>
 					<!-- /.box-header -->
@@ -223,7 +254,7 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 								<th width="50">anulate</th>
 								<th width="50">total</th>
 								<th width="50">aprobate</th>
-								<th width="50">șteptare</th>
+								<th width="50">ateptare</th>
 								<th width="50">anulate</th>
 								<th width="50">total</th>
 							</tr>
@@ -232,25 +263,54 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							<tbody>
 							<?php
 							foreach ($dataProvider->models as $row) {
+								//continue;
+								
+								/*
+					            [cost] => 239.81
+					            [advertiser] => Apiland.ro
+					            [valoare_comisioane_aprobate] => 408.04
+					            [valoare_comisioane_asteptare] => 101.04
+					            [valoare_comisioane_anulate] => 33.04
+					            [valoare_comisioane_total] => 542.12
+					            [volum_comisioane_aprobate] => 13
+					            [volum_comisioane_asteptare] => 5
+					            [volum_comisioane_anulate] => 3
+					            [volum_comisioane_total] => 21
+					            [value_accepted_details] => 2018-04|673.44,2018-07|139.08,2018-03|581.04,2018-06|400.52,2018-05|915.31
+					            [volume_accepted_details] => 2018-04|30,2018-07|4,2018-03|22,2018-06|17,2018-05|38
+					            [value_rejected_details] => 2018-04|0.00,2018-07|11.80,2018-03|20.16,2018-06|21.24,2018-05|0.00
+					            [volume_rejected_details] => 2018-04|0,2018-07|2,2018-03|1,2018-06|1,2018-05|0
+					            [valoare_comisioane_aprobate_avg] => 541.878000
+					            [volum_comisioane_aprobate_avg] => 22.2000
+					            [valoare_comisioane_anulate_avg] => 10.640000
+					            [volum_comisioane_anulate_avg] => 0.8000
+								 * */
 								//VarDumper::dump($row, 10, true);continue;
+								
+								$ram_valoare_tooltip = '';
+								if (isset($row['value_accepted_details'])) {
+									$ram_valoare_tooltip .= $row['value_accepted_details'];
+									$ram_valoare_tooltip .= '<br>'.$row['value_rejected_details'];
+								}
+								
 								?>
 								<tr>
 									<td><?=$row['advertiser'];?></td>
+									<td align="right"><?=$row['profit_garantat'];?></td>
+									<td align="right"><?=$row['profit_estimat'];?></td>
+									<td align="right"><?=$row['ra_valoare'];?>%</td>
+									<td align="right"><?=$row['ram_valoare'];?>%</td>
+									<td align="right"><?=$row['ra_volum'];?>%</td>
+									<td align="right"><?=$row['ram_volum'];?>%</td>
 									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['cost'];?></td>
-									<td align="right"><?=$row['aprobate'];?></td>
-									<td align="right"><?=$row['asteptare'];?></td>
-									<td align="right"><?=$row['anulate'];?></td>
-									<td align="right"><?=$row['total'];?></td>
+									<td align="right"><?=$row['valoare_comisioane_aprobate'];?></td>
+									<td align="right"><?=$row['valoare_comisioane_asteptare'];?></td>
+									<td align="right"><?=$row['valoare_comisioane_anulate'];?></td>
+									<td align="right"><?=$row['valoare_comisioane_total'];?></td>
+									<td align="right"><?=$row['volum_comisioane_aprobate'];?></td>
+									<td align="right"><?=$row['volum_comisioane_asteptare'];?></td>
+									<td align="right"><?=$row['volum_comisioane_anulate'];?></td>
+									<td align="right"><?=$row['volum_comisioane_total'];?></td>
 								</tr>
 								<?php
 							}
@@ -259,12 +319,7 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							
 							<tfoot>
 							<tr>
-								<th>Advertiser</th>
-								<th>Cost</th>
-								<th>Accepted</th>
-								<th>Pending</th>
-								<th>Rejected</th>
-								<th>Total</th>
+								<th></th>
 							</tr>
 							</tfoot>
 						</table>

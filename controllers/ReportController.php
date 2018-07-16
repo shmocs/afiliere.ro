@@ -28,17 +28,15 @@ class ReportController extends Controller
 	    	$date_type = $params['date_type'];
 	    }
 	
-	    $start_date = date('Y-m-d H:i:s', strtotime('last month'));
-        $end_date = date('Y-m-d H:i:s');
-        $start_date = '2018-06-01';
-        $end_date = '2018-07-01';
-	    
-	    if (isset($params['start_date'])) {
-	    	$start_date = $params['start_date'];
-	    }
-	    if (isset($params['end_date'])) {
-	    	$end_date = $params['end_date'];
-	    }
+	    $start_date = date('Y-m-d', strtotime('last month'));
+        $end_date = date('Y-m-d');
+	
+        
+	    if (isset($params['date_range'])) {
+		    $date_explode = explode(" - ", $params['date_range']);
+		    $start_date = trim($date_explode[0]);
+		    $end_date = trim($date_explode[1]);
+		}
     
 	    
 	    $dataProvider = Reports::getGlobalReport($date_type, $start_date, $end_date);
@@ -48,6 +46,8 @@ class ReportController extends Controller
 		    'index',
 		    [
 			    'dataProvider' => $dataProvider,
+			    'date_type' => $date_type,
+			    'date_range' => $start_date . ' - ' . $end_date,
 		    ]
 	    );
     }
@@ -59,19 +59,33 @@ class ReportController extends Controller
      */
     public function actionAdvertiser()
     {
-	    $searchModel = new Sale();
-	
 	    $params = Yii::$app->request->get();
 	
-	    $dataProvider = $searchModel->search($params);
+	    $date_type = 'click_date';
+	    if (isset($params['date_type'])) {
+		    $date_type = $params['date_type'];
+	    }
+	
+	    $start_date = date('Y-m-d', strtotime('last month'));
+	    $end_date = date('Y-m-d');
+	
+	
+	    if (isset($params['date_range'])) {
+		    $date_explode = explode(" - ", $params['date_range']);
+		    $start_date = trim($date_explode[0]);
+		    $end_date = trim($date_explode[1]);
+	    }
+	
+	
+	    $dataProvider = Reports::getGlobalReport($date_type, $start_date, $end_date);
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
-	    
+	
 	    return $this->render(
-		    'advertiser',
+		    'index',
 		    [
 			    'dataProvider' => $dataProvider,
-			    'searchModel' => $searchModel,
-			    'model' => $searchModel,
+			    'date_type' => $date_type,
+			    'date_range' => $start_date . ' - ' . $end_date,
 		    ]
 	    );
     }

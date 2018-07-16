@@ -1,5 +1,7 @@
 <?php
 
+use kartik\daterange\DateRangePicker;
+
 $data = [
 	[
 		'date' => '2017-11-02',
@@ -36,14 +38,10 @@ $data = [
 //$sales = \app\models\Sale::getAllForCharts();
 //\yii\helpers\VarDumper::dump($sales, 10, true);
 
-$data = \app\models\Sale::getDataChart01();
-//\yii\helpers\VarDumper::dump($data, 10, true);
 
-$json_data = json_encode($data);
+$performance_data = json_encode($performance_data);
 
 
-$profits_data = \yii\reports\Reports::getDataChartProfits();
-//\yii\helpers\VarDumper::dump($profits_data, 10, true);
 $profits_json = json_encode($profits_data);
 
 ?>
@@ -196,7 +194,7 @@ $profits_json = json_encode($profits_data);
 			}]
 		},
 		
-		"dataProvider": <?php echo $json_data;?>
+		"dataProvider": <?php echo $performance_data;?>
 	});
 
 	var chart_conversions = AmCharts.makeChart("chartdiv_conversions", {
@@ -324,7 +322,7 @@ $profits_json = json_encode($profits_data);
 		"export": {
 			"enabled": true
 		},
-		"dataProvider": <?php echo $json_data;?>
+		"dataProvider": <?php echo $performance_data;?>
 	});
 
 
@@ -630,7 +628,31 @@ $profits_json = json_encode($profits_data);
 		<!-- LINE CHART -->
 		<div class="box box-info">
 			<div class="box-header with-border">
-				<h3 class="box-title">Sales Performance</h3>
+				<h3 class="box-title pull-left">Sales Performance</h3>
+				
+				<div class="drp-container col-md-4">
+					<?php
+					echo DateRangePicker::widget([
+						'name'=>'date_range',
+						'value' => $date_range,
+						'presetDropdown'=>true,
+						'hideInput'=>true,
+						
+						'pluginOptions' => [
+							'opens'=>'right',
+							'locale' => [
+								'cancelLabel' => 'Clear',
+								'format' => 'YYYY-MM-DD',
+							]
+						],
+					
+					]);
+					?>
+				</div>
+				<div class="col-md-2">
+					
+					<a href="#" class="btn btn-primary dashboard_filter_date_range">Submit</a>
+				</div>
 				
 				<div class="box-tools pull-right">
 					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>

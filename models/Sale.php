@@ -163,10 +163,12 @@ class Sale extends \yii\db\ActiveRecord
 	}
 	
 	
-	public static function getDataChart01() {
+	public static function getDataChart01($start_date, $end_date) {
 		$sql = "
 			SELECT DATE(`conversion_date`) AS `date`, `platform`, SUM(`amount`) AS `sum`, SUM(1) AS `cnt`
-			FROM `sale` WHERE 1
+			FROM `sale`
+			WHERE 1
+				AND `conversion_date` BETWEEN '{$start_date}' AND '{$end_date}'
 			GROUP BY `date`, `platform`
 			ORDER BY `date` ASC
     	";

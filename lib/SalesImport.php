@@ -129,6 +129,10 @@ class SalesImport
 			// sanitize "word1, word2" columns
 			$columns = str_getcsv($line);
 			
+			foreach ($columns as $idx => $column) {
+				$columns[$idx] = trim($column);
+			}
+			
 			//ID,Program,Program Status,Affiliate,Commission type,Commission Amount (EUR),Commission Amount (RON),Status,Sale Amount (EUR),Sale Amount (RON),Description,Transaction Date,Transaction IP,Click Date,Click IP,Click Referrer,Click Redirect,Device Type,Click Tag,Initial Commission Amount,Comments
 			
 			$row = [
@@ -159,6 +163,10 @@ class SalesImport
             
             // sanitize "word1, word2" columns
             $columns = str_getcsv($line);
+			
+			foreach ($columns as $idx => $column) {
+				$columns[$idx] = trim($column);
+            }
             
             if ($columns[13] == 'link') {
                 //v1

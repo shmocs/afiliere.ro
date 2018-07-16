@@ -64,8 +64,34 @@ class SiteController extends Controller
     	if (Yii::$app->user->isGuest) {
     		return $this->actionLogin();
 	    }
-    		
-        return $this->render('index');
+	
+	    $params = Yii::$app->request->get();
+	
+	    $start_date = date('Y-m-d', strtotime('last month'));
+	    $end_date = date('Y-m-d');
+		
+	    if (isset($params['date_range'])) {
+		    $date_explode = explode(" - ", $params['date_range']);
+		    $start_date = trim($date_explode[0]);
+		    $end_date = trim($date_explode[1]);
+	    }
+	
+	    
+	    $performance_data = \app\models\Sale::getDataChart01($start_date, $end_date);
+		//\yii\helpers\VarDumper::dump($data, 10, true);
+
+	    
+	    $profits_data = \yii\reports\Reports::getDataChartProfits();
+		//\yii\helpers\VarDumper::dump($profits_data, 10, true);
+	    
+        return $this->render(
+        	'index',
+	        [
+        	    'performance_data' => $performance_data,
+        	    'profits_data' => $profits_data,
+        	    'date_range' => $start_date . ' - ' . $end_date,
+	        ]
+        );
     }
 
     /**
