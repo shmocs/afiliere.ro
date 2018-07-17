@@ -109,7 +109,7 @@ class Reports
         	ORDER BY `c`.`advertiser` ASC
 		";
 	    $costs = Yii::$app->db->createCommand($sql)->queryAll();
-	    \yii\helpers\VarDumper::dump($costs, 10, true);
+	    //\yii\helpers\VarDumper::dump($costs, 10, true);
 		
 	    $sql = "
 			SELECT
@@ -150,8 +150,8 @@ class Reports
         	ORDER BY `advertiser` ASC
 		";
 	    $sales = Yii::$app->db->createCommand($sql)->queryAll();
-	    \yii\helpers\VarDumper::dump($sql, 10, true);
-	    \yii\helpers\VarDumper::dump($sales, 10, true);
+	    //\yii\helpers\VarDumper::dump($sql, 10, true);
+	    //\yii\helpers\VarDumper::dump($sales, 10, true);
 		
 	
 		$sql = "
