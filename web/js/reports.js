@@ -1,6 +1,9 @@
 
 
 $(function () {
+
+	$('[data-toggle="tooltip"]').tooltip();
+
 	//$('#example1').DataTable();
 	$('#global_report_table').DataTable({
 		'paging'      : true,

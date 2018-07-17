@@ -78,7 +78,7 @@ class SiteController extends Controller
 	
 	    
 	    $performance_data = \app\models\Sale::getDataChart01($start_date, $end_date);
-		//\yii\helpers\VarDumper::dump($data, 10, true);
+		//\yii\helpers\VarDumper::dump($performance_data, 10, true);
 
 	    
 	    $profits_data = \yii\reports\Reports::getDataChartProfits();
