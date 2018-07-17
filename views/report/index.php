@@ -279,6 +279,9 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							
 							foreach ($dataProvider->models as $row) {
 								//continue;
+								
+								//nu ma intereseaza sa apara acolo daca nu i-am promovat in perioada aia
+                                if ($row['cost'] == 0 || $row['volum_comisioane_total'] == 0) continue;
 		
 								//VarDumper::dump($row, 10, true);continue;
 								
@@ -286,6 +289,12 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 								if (isset($row['value_accepted_details'])) {
 									$ram_valoare_tooltip .= $row['value_accepted_details'];
 									$ram_valoare_tooltip .= '<br>'.$row['value_rejected_details'];
+								}
+								
+								$ram_volum_tooltip = '';
+								if (isset($row['volume_accepted_details'])) {
+                                    $ram_volum_tooltip .= $row['volume_accepted_details'];
+                                    $ram_volum_tooltip .= '<br>'.$row['volume_rejected_details'];
 								}
 								
 								$totals['profit_garantat'] += $row['profit_garantat'];
@@ -308,9 +317,9 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 									<td align="right"><?=$row['profit_garantat'];?></td>
 									<td align="right"><?=$row['profit_estimat'];?></td>
 									<td align="right"><?=$row['ra_valoare'];?>%</td>
-									<td align="right"><?=$row['ram_valoare'];?>%</td>
+									<td align="right" title="<?=$ram_valoare_tooltip;?>"><?=$row['ram_valoare'];?>%</td>
 									<td align="right"><?=$row['ra_volum'];?>%</td>
-									<td align="right"><?=$row['ram_volum'];?>%</td>
+									<td align="right" title="<?=$ram_volum_tooltip;?>"><?=$row['ram_volum'];?>%</td>
 									<td align="right"><?=$row['cost'];?></td>
 									<td align="right"><?=$row['valoare_comisioane_aprobate'];?></td>
 									<td align="right"><?=$row['valoare_comisioane_asteptare'];?></td>
