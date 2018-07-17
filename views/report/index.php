@@ -328,7 +328,7 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							
 							<tfoot>
 							<tr>
-								<th></th>
+								<th style="text-align: right;">Totaluri:</th>
 								<th style="text-align: right;"><?=$totals['profit_garantat'];?></th>
 								<th style="text-align: right;"><?=$totals['profit_estimat'];?></th>
 								<th></th>
