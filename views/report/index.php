@@ -262,29 +262,24 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							
 							<tbody>
 							<?php
+                            
+                            $totals = [
+                            	'profit_garantat' => 0,
+                            	'profit_estimat' => 0,
+                            	'cost' => 0,
+                            	'valoare_comisioane_aprobate' => 0,
+                            	'valoare_comisioane_asteptare' => 0,
+                            	'valoare_comisioane_anulate' => 0,
+                            	'valoare_comisioane_total' => 0,
+                            	'volum_comisioane_aprobate' => 0,
+                            	'volum_comisioane_asteptare' => 0,
+                            	'volum_comisioane_anulate' => 0,
+                            	'volum_comisioane_total' => 0,
+                            ];
+							
 							foreach ($dataProvider->models as $row) {
 								//continue;
-								
-								/*
-					            [cost] => 239.81
-					            [advertiser] => Apiland.ro
-					            [valoare_comisioane_aprobate] => 408.04
-					            [valoare_comisioane_asteptare] => 101.04
-					            [valoare_comisioane_anulate] => 33.04
-					            [valoare_comisioane_total] => 542.12
-					            [volum_comisioane_aprobate] => 13
-					            [volum_comisioane_asteptare] => 5
-					            [volum_comisioane_anulate] => 3
-					            [volum_comisioane_total] => 21
-					            [value_accepted_details] => 2018-04|673.44,2018-07|139.08,2018-03|581.04,2018-06|400.52,2018-05|915.31
-					            [volume_accepted_details] => 2018-04|30,2018-07|4,2018-03|22,2018-06|17,2018-05|38
-					            [value_rejected_details] => 2018-04|0.00,2018-07|11.80,2018-03|20.16,2018-06|21.24,2018-05|0.00
-					            [volume_rejected_details] => 2018-04|0,2018-07|2,2018-03|1,2018-06|1,2018-05|0
-					            [valoare_comisioane_aprobate_avg] => 541.878000
-					            [volum_comisioane_aprobate_avg] => 22.2000
-					            [valoare_comisioane_anulate_avg] => 10.640000
-					            [volum_comisioane_anulate_avg] => 0.8000
-								 * */
+		
 								//VarDumper::dump($row, 10, true);continue;
 								
 								$ram_valoare_tooltip = '';
@@ -292,6 +287,20 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 									$ram_valoare_tooltip .= $row['value_accepted_details'];
 									$ram_valoare_tooltip .= '<br>'.$row['value_rejected_details'];
 								}
+								
+								$totals['profit_garantat'] += $row['profit_garantat'];
+								$totals['profit_estimat'] += $row['profit_estimat'];
+								$totals['cost'] += $row['cost'];
+								
+								$totals['valoare_comisioane_aprobate'] += $row['valoare_comisioane_aprobate'];
+								$totals['valoare_comisioane_asteptare'] += $row['valoare_comisioane_asteptare'];
+								$totals['valoare_comisioane_anulate'] += $row['valoare_comisioane_anulate'];
+								$totals['valoare_comisioane_total'] += $row['valoare_comisioane_total'];
+								
+								$totals['volum_comisioane_aprobate'] += $row['volum_comisioane_aprobate'];
+								$totals['volum_comisioane_asteptare'] += $row['volum_comisioane_asteptare'];
+								$totals['volum_comisioane_anulate'] += $row['volum_comisioane_anulate'];
+								$totals['volum_comisioane_total'] += $row['volum_comisioane_total'];
 								
 								?>
 								<tr>
@@ -320,6 +329,21 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 							<tfoot>
 							<tr>
 								<th></th>
+								<th style="text-align: right;"><?=$totals['profit_garantat'];?></th>
+								<th style="text-align: right;"><?=$totals['profit_estimat'];?></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th></th>
+								<th style="text-align: right;"><?=$totals['cost'];?></th>
+								<th style="text-align: right;"><?=$totals['valoare_comisioane_aprobate'];?></th>
+								<th style="text-align: right;"><?=$totals['valoare_comisioane_asteptare'];?></th>
+								<th style="text-align: right;"><?=$totals['valoare_comisioane_anulate'];?></th>
+								<th style="text-align: right;"><?=$totals['valoare_comisioane_total'];?></th>
+								<th style="text-align: right;"><?=$totals['volum_comisioane_aprobate'];?></th>
+								<th style="text-align: right;"><?=$totals['volum_comisioane_asteptare'];?></th>
+								<th style="text-align: right;"><?=$totals['volum_comisioane_anulate'];?></th>
+								<th style="text-align: right;"><?=$totals['volum_comisioane_total'];?></th>
 							</tr>
 							</tfoot>
 						</table>
