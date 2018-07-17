@@ -104,12 +104,12 @@ class Reports
         		
             FROM `cost` `c`
             WHERE 1
-            	AND `c`.`campaign_date` BETWEEN '{$start_date}' AND '{$end_date}'
+            	AND `c`.`campaign_date` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
             GROUP BY `c`.`advertiser`
         	ORDER BY `c`.`advertiser` ASC
 		";
 	    $costs = Yii::$app->db->createCommand($sql)->queryAll();
-	    //\yii\helpers\VarDumper::dump($costs, 10, true);
+	    \yii\helpers\VarDumper::dump($costs, 10, true);
 		
 	    $sql = "
 			SELECT
@@ -140,7 +140,7 @@ class Reports
                 LEFT JOIN
                 (
                     SELECT * FROM `sale`
-                ) AS `s2` ON `s`.`id` = `s2`.`id` AND `s`.`{$date_type}` BETWEEN '{$start_date}' AND '{$end_date}'
+                ) AS `s2` ON `s`.`id` = `s2`.`id` AND `s`.`{$date_type}` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
                 WHERE 1
                 
                 GROUP BY `s`.`advertiser`
@@ -150,8 +150,8 @@ class Reports
         	ORDER BY `advertiser` ASC
 		";
 	    $sales = Yii::$app->db->createCommand($sql)->queryAll();
-	    //\yii\helpers\VarDumper::dump($sql, 10, true);
-	    //\yii\helpers\VarDumper::dump($sales, 10, true);
+	    \yii\helpers\VarDumper::dump($sql, 10, true);
+	    \yii\helpers\VarDumper::dump($sales, 10, true);
 		
 	
 		$sql = "
