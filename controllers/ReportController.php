@@ -81,7 +81,7 @@ class ReportController extends Controller
 	    //echo '<pre>';print_r($dataProvider);echo '</pre>';
 	
 	    return $this->render(
-		    'index',
+		    'advertiser',
 		    [
 			    'dataProvider' => $dataProvider,
 			    'date_type' => $date_type,

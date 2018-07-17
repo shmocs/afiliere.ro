@@ -630,7 +630,7 @@ $profits_json = json_encode($profits_data);
 			<div class="box-header with-border">
 				<h3 class="box-title pull-left">Sales Performance</h3>
 				
-				<div class="drp-container col-md-4">
+				<div class="drp-container col-md-5 col-xs-12">
 					<?php
 					echo DateRangePicker::widget([
 						'name'=>'date_range',
