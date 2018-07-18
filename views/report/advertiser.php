@@ -148,6 +148,97 @@ $ROAS_json = json_encode($ROAS_data);
 		},
 		"dataProvider": <?php echo $profits_json;?>
 	});
+
+	var chart_roas = AmCharts.makeChart("chartdiv_roas", {
+		"type": "serial",
+		"theme": "light",
+
+		"precision": 2,
+		"valueAxes": [{
+			"id": "v1",
+			"title": "LEI",
+			"position": "left",
+			"autoGridCount": false,
+			"labelFunction": function(value) {
+				return "" + Math.round(value, 2) + "";
+			},
+		}],
+		"graphs": [{
+
+			"id": "g1",
+			"valueAxis": "v1",
+			"bullet": "round",
+			"bulletBorderAlpha": 1,
+			"bulletColor": "#FFFFFF",
+			"bulletSize": 5,
+			"hideBulletsCount": 50,
+			"lineThickness": 2,
+			"lineColor": "#20acd4",
+			//"type": "smoothedLine",
+			"title": "CPC",
+			"useLineColorForBulletBorder": true,
+			"valueField": "cpc",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+
+
+			"id": "g2",
+			"valueAxis": "v1",
+			"bullet": "round",
+			"bulletBorderAlpha": 1,
+			"bulletColor": "#FFFFFF",
+			"bulletSize": 5,
+			"hideBulletsCount": 50,
+			"lineThickness": 2,
+			"lineColor": "#ff851b",
+			//"type": "smoothedLine",
+			"title": "ROAS",
+			"useLineColorForBulletBorder": true,
+			"valueField": "roas",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}],
+		"chartScrollbar": {
+			"graph": "g1",
+			"oppositeAxis": false,
+			"offset": 30,
+			"scrollbarHeight": 50,
+			"backgroundAlpha": 0,
+			"selectedBackgroundAlpha": 0.1,
+			"selectedBackgroundColor": "#888888",
+			"graphFillAlpha": 0,
+			"graphLineAlpha": 0.5,
+			"selectedGraphFillAlpha": 0,
+			"selectedGraphLineAlpha": 1,
+			"autoGridCount": true,
+			"color": "#AAAAAA"
+		},
+		"chartCursor": {
+			"pan": true,
+			"valueLineEnabled": true,
+			"valueLineBalloonEnabled": true,
+			"cursorAlpha": 0.1,
+			"valueLineAlpha": 0.5
+		},
+		"categoryField": "date",
+		"categoryAxis": {
+			//"parseDates": true,
+			//"dashLength": 1,
+			//"minorGridEnabled": true
+			"labelRotation": 45
+		},
+		"legend": {
+			"useGraphSettings": true,
+			"position": "top"
+		},
+		"balloon": {
+			"borderThickness": 1,
+			"shadowAlpha": 0
+		},
+		"export": {
+			"enabled": true
+		},
+		"dataProvider": <?php echo $ROAS_json;?>
+	});
 </script>
 
 <?php
@@ -155,7 +246,7 @@ $ROAS_json = json_encode($ROAS_data);
 $_advertiser_data = [
 	'clicks' => 4529,
 	'conversions' => 527,
-	'commision_amount' => 1738.00,
+	'commission_amount' => 1738.00,
 	'cost' => 2147.33,
 	'time_lag' => '',
 	'rma_volume' => 87,
@@ -230,6 +321,7 @@ if ($advertiser_data['rma_value'] >= 90) {
 						<h3 class="box-title pull-left"><i class="fa fa-th-list"></i> Advertiser report</h3>
 						
 						<div class="pull-left col-md-2">
+							Advertiser:
 							<?php
 							echo Html::activeDropDownList(
 								new Sale(),
@@ -240,9 +332,17 @@ if ($advertiser_data['rma_value'] >= 90) {
 							?>
 						</div>
 						<div class="pull-left col-md-2">
+							Date type:
 							<select name="date_type" id="date_type">
 								<option value="click_date" <?php if ($date_type == 'click_date') echo 'selected="selected"';?>>Click Date</option>
 								<option value="conversion_date" <?php if ($date_type == 'conversion_date') echo 'selected="selected"';?>>Conversion Date</option>
+							</select>
+						</div>
+						<div class="pull-left col-md-2">
+							Commission type:
+							<select name="commission_type" id="commission_type">
+								<option value="accepted" <?php if ($commission_type == 'accepted') echo 'selected="selected"';?>>Accepted</option>
+								<option value="accepted_pending" <?php if ($commission_type == 'accepted_pending') echo 'selected="selected"';?>>Accepted + Pending</option>
 							</select>
 						</div>
 						
@@ -337,8 +437,8 @@ if ($advertiser_data['rma_value'] >= 90) {
 					<span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
 					
 					<div class="info-box-content">
-						<span class="info-box-text">Commision</span>
-						<span class="info-box-number"><?=$advertiser_data['commision_amount'];?></span>
+						<span class="info-box-text">Commission</span>
+						<span class="info-box-number"><?=$advertiser_data['commission_amount'];?></span>
 					</div>
 				</div>
 			</div>
@@ -452,7 +552,7 @@ if ($advertiser_data['rma_value'] >= 90) {
 					<div class="inner">
 						<h3><?=$advertiser_data['roas'];?></h3>
 						
-						<p>Commision / Cost</p>
+						<p>Commission / Cost</p>
 					</div>
 					<div class="iconn">
 						<i class="fa fa-money"></i> / <i class="fa fa-credit-card"></i>
@@ -587,7 +687,7 @@ if ($advertiser_data['rma_value'] >= 90) {
 				<!-- LINE CHART -->
 				<div class="box box-info">
 					<div class="box-header with-border">
-						<h3 class="box-title">ROAS / CPC / Cost</h3>
+						<h3 class="box-title">ROAS / CPC</h3>
 						
 						<div class="box-tools pull-right">
 							<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -598,9 +698,7 @@ if ($advertiser_data['rma_value'] >= 90) {
 					<div class="box-body chart-responsive">
 						<div id="chartdiv_roas">
 							<?php
-							echo '<pre>';
-							print_r($ROAS_data);
-							echo '</pre>';
+							//echo '<pre>';print_r($ROAS_data);echo '</pre>';
 							?>
 						</div>
 					</div>

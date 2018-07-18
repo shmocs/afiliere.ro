@@ -65,6 +65,11 @@ class ReportController extends Controller
 	    if (isset($params['date_type'])) {
 		    $date_type = $params['date_type'];
 	    }
+    
+        $commission_type = 'accepted';
+	    if (isset($params['commission_type'])) {
+            $commission_type = $params['commission_type'];
+	    }
 	    
 	    $start_date = date('Y-m-d', strtotime('last month'));
 	    $end_date = date('Y-m-d');
@@ -81,13 +86,13 @@ class ReportController extends Controller
 		    $advertiser = $params['advertiser'];
 	    }
 	
-	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $start_date, $end_date);
+	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $commission_type, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
 	
-	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $start_date, $end_date);
+	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $commission_type, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
 	
-	    $advertiser_data = Reports::getAdvertiserReport($advertiser, $date_type, $start_date, $end_date);
+	    $advertiser_data = Reports::getAdvertiserReport($advertiser, $date_type, $commission_type, $start_date, $end_date);
 	    //VarDumper::dump($advertiser_data, 10, true);
 	    
 	    return $this->render(
@@ -99,6 +104,7 @@ class ReportController extends Controller
 			    'advertisers' => $advertisers,
 			    'advertiser' => $advertiser,
 			    'date_type' => $date_type,
+			    'commission_type' => $commission_type,
 			    'date_range' => $start_date . ' - ' . $end_date,
 		    ]
 	    );

@@ -33,17 +33,24 @@ $(function () {
 		window.location.href = url;
 	});
 
+	$('#commission_type').on('change', function (e) {
+		url = keepSearchingURL();
+		window.location.href = url;
+	});
+
 
 	function keepSearchingURL() {
-		var _date_range, _date_type, _advertiser;
+		var _date_range, _date_type, _commission_type, _advertiser;
 
 		_date_range = $("input[name=date_range]").val();
 		_date_type = $('#date_type').val();
+		_commission_type = $('#commission_type').val();
 		_advertiser = $('#sale-advertiser').val();
 
 		url = window.location.href;
 		url = updateQueryStringParameter(url, 'date_range', _date_range);
 		url = updateQueryStringParameter(url, 'date_type', _date_type);
+		url = updateQueryStringParameter(url, 'commission_type', _commission_type);
 		url = updateQueryStringParameter(url, 'advertiser', _advertiser);
 
 		return url;

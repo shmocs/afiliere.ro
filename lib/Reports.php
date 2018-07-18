@@ -95,9 +95,15 @@ class Reports
     }
 	
 	
-	public static function getAdvertiserDataChartProfits($advertiser, $date_type = 'click_date', $start_date, $end_date) {
-		
-		$sql = "
+	public static function getAdvertiserDataChartProfits($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $start_date, $end_date) {
+        
+        $status_sql = " = 'accepted'";
+        if ($commission_type == 'accepted_pending') {
+            $status_sql = " IN ('accepted', 'pending')";
+        }
+        
+        
+        $sql = "
         SELECT `virt`.*
         FROM (
             (
@@ -107,7 +113,7 @@ class Reports
                     'sale' AS `value_type`
                 FROM `sale`
                 WHERE 1
-                    AND `status` = 'accepted'
+                    AND `status` {$status_sql}
                     AND `advertiser` = '".$advertiser."'
                     AND `{$date_type}` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
                 GROUP BY `date`
@@ -172,8 +178,13 @@ class Reports
 	}
 
 	
-	public static function getAdvertiserDataChartROAS($advertiser, $date_type = 'click_date', $start_date, $end_date) {
-		
+	public static function getAdvertiserDataChartROAS($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $start_date, $end_date) {
+        
+        $status_sql = " = 'accepted'";
+        if ($commission_type == 'accepted_pending') {
+            $status_sql = " IN ('accepted', 'pending')";
+        }
+	    
 		$sql = "
             SELECT
                 DATE(`c`.`campaign_date`) AS `date`,
@@ -181,7 +192,7 @@ class Reports
                 SUM(`c`.`clicks`) as `clicks`,
                 IFNULL(SUM(`s`.`amount`), 0) as `sales`
             FROM `cost` `c`
-            LEFT JOIN  `sale` `s` ON `s`.`status` = 'accepted' AND `c`.`advertiser` = `s`.`advertiser` AND DATE(`c`.`campaign_date`) = DATE(`s`.`{$date_type}`)
+            LEFT JOIN  `sale` `s` ON `s`.`status` {$status_sql} AND `c`.`advertiser` = `s`.`advertiser` AND DATE(`c`.`campaign_date`) = DATE(`s`.`{$date_type}`)
             WHERE 1
                 AND `c`.`advertiser` = '".$advertiser."'
                 AND `c`.`campaign_date` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
@@ -424,7 +435,7 @@ class Reports
     }
     
     
-    public static function getAdvertiserReport($advertiser, $date_type = 'click_date', $start_date, $end_date) {
+    public static function getAdvertiserReport($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $start_date, $end_date) {
     
 		
 	    $sql = "
@@ -443,19 +454,24 @@ class Reports
 	    $costs = Yii::$app->db->createCommand($sql)->queryOne();
 	    //\yii\helpers\VarDumper::dump($costs, 10, true);
 		
+        $status_sql = " = 'accepted'";
+        if ($commission_type == 'accepted_pending') {
+            $status_sql = " IN ('accepted', 'pending')";
+        }
+        
 	    $sql = "
 			SELECT
         		`advertiser`,
-            	`commision_amount`,
+            	`commission_amount`,
             	`conversions`
             FROM (
                 SELECT
                     `s`.`advertiser`,
-                    -- IFNULL( SUM( CASE WHEN `s2`.`status` IS NOT NULL THEN `s2`.`amount` END ), 0) AS `commision_amount`,
+                    -- IFNULL( SUM( CASE WHEN `s2`.`status` IS NOT NULL THEN `s2`.`amount` END ), 0) AS `commission_amount`,
                     -- IFNULL( SUM( CASE WHEN `s2`.`status` IS NOT NULL THEN 1 END ), 0) AS `conversions`
                     
-					IFNULL( SUM( CASE WHEN `s2`.`status` = 'accepted' THEN `s2`.`amount` END ), 0) AS `commision_amount`,
-                    IFNULL( SUM( CASE WHEN `s2`.`status` = 'accepted' THEN 1 END ), 0) AS `conversions`
+					IFNULL( SUM( CASE WHEN `s2`.`status` {$status_sql} THEN `s2`.`amount` END ), 0) AS `commission_amount`,
+                    IFNULL( SUM( CASE WHEN `s2`.`status` {$status_sql} THEN 1 END ), 0) AS `conversions`
                     
                 FROM `sale` `s`
                 LEFT JOIN
@@ -529,17 +545,17 @@ class Reports
 	    $advertiser['clicks'] = isset($costs['clicks']) ? $costs['clicks'] : 0;
 		$advertiser['cost'] = isset($costs['cost']) ? $costs['cost'] : 0;
 		$advertiser['conversions'] = isset($sales['conversions']) ? $sales['conversions'] : 0;
-		$advertiser['commision_amount'] = isset($sales['commision_amount']) ? $sales['commision_amount'] : 0;
+		$advertiser['commission_amount'] = isset($sales['commission_amount']) ? $sales['commission_amount'] : 0;
 	    $advertiser['time_lag'] = '';
 	    $advertiser['rma_volume'] = number_format($ram_volum * 100, 2, '.', '');
 	    $advertiser['rma_value'] = number_format($ram_valoare * 100, 2, '.', '');
 	
-	    $advertiser['profit'] = number_format($advertiser['commision_amount'] - $advertiser['cost'], 2, '.', '');
+	    $advertiser['profit'] = number_format($advertiser['commission_amount'] - $advertiser['cost'], 2, '.', '');
 	
 	    if ($advertiser['clicks'] > 0) {
-		    $advertiser['roas'] = number_format($advertiser['commision_amount'] / $advertiser['cost'], 2, '.', '');
+		    $advertiser['roas'] = number_format($advertiser['commission_amount'] / $advertiser['cost'], 2, '.', '');
 		    $advertiser['conversion_rate'] = number_format(($advertiser['conversions'] * 100) / $advertiser['clicks'], 2, '.', '');
-		    $advertiser['revenue_click'] = number_format($advertiser['commision_amount'] / $advertiser['clicks'], 2, '.', '');
+		    $advertiser['revenue_click'] = number_format($advertiser['commission_amount'] / $advertiser['clicks'], 2, '.', '');
 		    $advertiser['cpc'] = number_format($advertiser['cost'] / $advertiser['clicks'], 2, '.', '');
 		    $advertiser['profit_click'] = number_format($advertiser['profit'] / $advertiser['clicks'], 2, '.', '');
 	    } else {
