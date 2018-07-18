@@ -339,7 +339,7 @@ if ($advertiser_data['rma_value'] >= 90) {
 							</select>
 						</div>
 						<div class="pull-left col-md-2">
-							Commission type:
+							Commission:
 							<select name="commission_type" id="commission_type">
 								<option value="accepted" <?php if ($commission_type == 'accepted') echo 'selected="selected"';?>>Accepted</option>
 								<option value="accepted_pending" <?php if ($commission_type == 'accepted_pending') echo 'selected="selected"';?>>Accepted + Pending</option>
