@@ -109,8 +109,8 @@ class Reports
             $date_costs = "CONCAT(YEAR(`campaign_date`), '/', WEEK(`campaign_date`))";
         }
         if ($chartdiv_profit_interval == 31) {
-            $date_sales = "CONCAT(YEAR({$date_type}), '/', WEEK({$date_type}))";
-            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', WEEK(`campaign_date`))";
+            $date_sales = "CONCAT(YEAR({$date_type}), '/', MONTH({$date_type}))";
+            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', MONTH(`campaign_date`))";
         }
         
         $sql = "
