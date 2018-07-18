@@ -138,7 +138,7 @@ class SalesImport
 			$row = [
 				'platform'          => '2Performant',
 				'platform_id'       => $columns[0],
-				'advertiser'        => $columns[1],
+				'advertiser'        => strtolower($columns[1]),
 				'click_date'        => $this->utc_to_datetime($columns[13]),
 				'conversion_date'   => $this->utc_to_datetime($columns[11]),
 				'amount'            => $columns[6],
@@ -175,7 +175,7 @@ class SalesImport
                 $row = [
                     'platform'          => 'ProfitShare',
                     'platform_id'       => $columns[1],
-                    'advertiser'        => $columns[0],
+	                'advertiser'        => strtolower($columns[0]),
                     'click_date'        => $columns[3],
                     'conversion_date'   => $columns[2],
                     'amount'            => $columns[10] == 'Aprobat' ? $columns[7] : $columns[8],
@@ -197,7 +197,7 @@ class SalesImport
                 $row = [
                     'platform'          => 'ProfitShare',
                     'platform_id'       => $columns[1],
-                    'advertiser'        => $columns[0],
+	                'advertiser'        => strtolower($columns[0]),
                     'click_date'        => $columns[3],
                     'conversion_date'   => $columns[2],
                     'amount'            => $columns[12] == 'Aprobate' ? $columns[8] : ('Anulate' ? $columns[10] : $columns[9]),

@@ -61,27 +61,44 @@ class ReportController extends Controller
     {
 	    $params = Yii::$app->request->get();
 	
+	    $date_type = 'click_date';
+	    if (isset($params['date_type'])) {
+		    $date_type = $params['date_type'];
+	    }
+	    
 	    $start_date = date('Y-m-d', strtotime('last month'));
 	    $end_date = date('Y-m-d');
-	
-	
 	    if (isset($params['date_range'])) {
 		    $date_explode = explode(" - ", $params['date_range']);
 		    $start_date = trim($date_explode[0]);
 		    $end_date = trim($date_explode[1]);
 	    }
-    
-        $performance_data = \app\models\Sale::getDataChart01($start_date, $end_date);
+	
+	
+	    $advertisers = Sale::find()->select('advertiser')->distinct()->asArray()->all();
+	    $advertiser = $advertisers[0]['advertiser'];
+	    if (isset($params['advertiser'])) {
+		    $advertiser = $params['advertiser'];
+	    }
+	
+	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
-        
-
-        $advertisers = [];
-        
+	
+	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $start_date, $end_date);
+        //\yii\helpers\VarDumper::dump($performance_data, 10, true);
+	
+	    $advertiser_data = Reports::getAdvertiserReport($advertiser, $date_type, $start_date, $end_date);
+	    //VarDumper::dump($advertiser_data, 10, true);
+	    
 	    return $this->render(
 		    'advertiser',
 		    [
-			    'performance_data' => $performance_data,
+			    'profits_data' => $profits_data,
+			    'ROAS_data' => $ROAS_data,
+			    'advertiser_data' => $advertiser_data,
 			    'advertisers' => $advertisers,
+			    'advertiser' => $advertiser,
+			    'date_type' => $date_type,
 			    'date_range' => $start_date . ' - ' . $end_date,
 		    ]
 	    );

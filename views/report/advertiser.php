@@ -20,15 +20,19 @@ use yii\helpers\ArrayHelper;
 //VarDumper::dump(\Yii::getAlias('@webroot'), 10, true);
 //VarDumper::dump($dataProvider->models, 10, true);
 
-$performance_data = json_encode($performance_data);
-
+$profits_json = json_encode($profits_data);
+$ROAS_json = json_encode($ROAS_data);
 
 ?>
 <!-- Styles -->
 <style>
-	#chartdiv, #chartdiv_sales, #chartdiv_conversions, #chartdiv_profit {
+	#chartdiv_profit, #chartdiv_roas {
 		width: 100%;
 		height: 400px;
+	}
+	
+	#chartdiv_roas {
+		overflow-y: auto;
 	}
 </style>
 <!-- Resources -->
@@ -42,23 +46,20 @@ $performance_data = json_encode($performance_data);
 
 <!-- Chart code -->
 <script>
-	var chart_sales = AmCharts.makeChart("chartdiv_sales", {
+
+	var chart_profit = AmCharts.makeChart("chartdiv_profit", {
 		"type": "serial",
-		// "dataLoader": {
-		// 	"url": "sales/chart01",
-		// 	"format": "json"
-		// },
 		"theme": "light",
-		"dataDateFormat": "YYYY-MM-DD",
+
 		"precision": 2,
 		"valueAxes": [{
 			"id": "v1",
-			"title": "Sales (LEI)",
+			"title": "LEI",
 			"position": "left",
 			"autoGridCount": false,
 			"labelFunction": function(value) {
 				return "" + Math.round(value, 2) + "";
-			}
+			},
 		}],
 		"graphs": [{
 			"id": "g1",
@@ -67,14 +68,30 @@ $performance_data = json_encode($performance_data);
 			"fillColors": "#e1ede9",
 			"fillAlphas": 1,
 			"type": "column",
-			"title": "Total Sales",
-			"valueField": "total_sales",
+			"title": "Sales",
+			"valueField": "sales",
 			"clustered": false,
-			"columnWidth": 0.5,
+			"columnWidth": 0.7,
 			"legendValueText": "[[value]]",
 			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
 		}, {
+
 			"id": "g2",
+			"valueAxis": "v1",
+			"lineColor": "#62cf73",
+			"fillColors": "#62cf73",
+			"fillAlphas": 1,
+			"type": "column",
+			"title": "Costs",
+			"valueField": "costs",
+			"clustered": false,
+			"columnWidth": 0.4,
+			"legendValueText": "[[value]]",
+			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
+		}, {
+
+
+			"id": "g3",
 			"valueAxis": "v1",
 			"bullet": "round",
 			"bulletBorderAlpha": 1,
@@ -84,25 +101,9 @@ $performance_data = json_encode($performance_data);
 			"lineThickness": 2,
 			"lineColor": "#20acd4",
 			//"type": "smoothedLine",
-			"title": "2Performant",
+			"title": "Profit",
 			"useLineColorForBulletBorder": true,
-			"valueField": "2Performant_sales_amount",
-			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-		}, {
-			"id": "g3",
-			"valueAxis": "v2",
-			"bullet": "round",
-			"bulletBorderAlpha": 1,
-			"bulletColor": "#FFFFFF",
-			"bulletSize": 5,
-			"hideBulletsCount": 50,
-			"lineThickness": 2,
-			"lineColor": "#ff851b",
-			//"type": "smoothedLine",
-			//"dashLength": 5,
-			"title": "ProfitShare",
-			"useLineColorForBulletBorder": true,
-			"valueField": "ProfitShare_sales_amount",
+			"valueField": "profit",
 			"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
 		}],
 		"chartScrollbar": {
@@ -124,14 +125,15 @@ $performance_data = json_encode($performance_data);
 			"pan": true,
 			"valueLineEnabled": true,
 			"valueLineBalloonEnabled": true,
-			"cursorAlpha": 0,
-			"valueLineAlpha": 0.2
+			"cursorAlpha": 0.1,
+			"valueLineAlpha": 0.5
 		},
 		"categoryField": "date",
 		"categoryAxis": {
-			"parseDates": true,
-			"dashLength": 1,
-			"minorGridEnabled": true
+			//"parseDates": true,
+			//"dashLength": 1,
+			//"minorGridEnabled": true
+			"labelRotation": 45
 		},
 		"legend": {
 			"useGraphSettings": true,
@@ -144,186 +146,27 @@ $performance_data = json_encode($performance_data);
 		"export": {
 			"enabled": true
 		},
-
-		"periodSelector": {
-			"position": "top",
-			"dateFormat": "YYYY-MM-DD",
-			"inputFieldWidth": 100,
-			"periods": [{
-				"period": "DD",
-				"count": 1,
-				"label": "1 day"
-			}, {
-				"period": "DD",
-				"count": 7,
-				"label": "1 week",
-			}, {
-				"period": "MM",
-				"count": 1,
-				"label": "1 month"
-			}, {
-				"period": "MM",
-				"count": 3,
-				"label": "3 months"
-			}, {
-				"period": "MAX",
-				"label": "MAX"
-			}]
-		},
-
-		"dataProvider": <?php echo $performance_data;?>
-	});
-
-	var chart_conversions = AmCharts.makeChart("chartdiv_conversions", {
-		"type": "serial",
-		// "dataLoader": {
-		// 	"url": "sales/chart01",
-		// 	"format": "json"
-		// },
-		"theme": "light",
-		"dataDateFormat": "YYYY-MM-DD",
-		"precision": 2,
-		"valueAxes": [
-			// {
-			// 	"id": "v1",
-			// 	"title": "Sales (LEI)",
-			// 	"position": "left",
-			// 	"autoGridCount": false,
-			// 	"labelFunction": function(value) {
-			// 		return "" + Math.round(value, 2) + "";
-			// 	}
-			// },
-			{
-				"id": "v2",
-				"title": "Nr. Conversions",
-				"gridAlpha": 0,
-				"position": "right",
-				"autoGridCount": false
-			}],
-		"graphs": [
-			// {
-			// 	"id": "g1",
-			// 	"valueAxis": "v1",
-			// 	"lineColor": "#e1ede9",
-			// 	"fillColors": "#e1ede9",
-			// 	"fillAlphas": 1,
-			// 	"type": "column",
-			// 	"title": "Total Sales",
-			// 	"valueField": "total_sales",
-			// 	"clustered": false,
-			// 	"columnWidth": 0.5,
-			// 	"legendValueText": "[[value]]",
-			// 	"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-			// },
-			{
-				"id": "g2",
-				"valueAxis": "v2",
-				"lineColor": "#62cf73",
-				"fillColors": "#e1ede9",
-				"fillAlphas": 1,
-				"type": "column",
-				"title": "Conversions",
-				"valueField": "total_conversions",
-				"clustered": false,
-				"columnWidth": 0.5,
-				"legendValueText": "[[value]]",
-				"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-			}, {
-				"id": "g3",
-				"valueAxis": "v2",
-				"bullet": "round",
-				"bulletBorderAlpha": 1,
-				"bulletColor": "#FFFFFF",
-				"bulletSize": 5,
-				"hideBulletsCount": 50,
-				"lineThickness": 2,
-				"lineColor": "#20acd4",
-				//"type": "smoothedLine",
-				"title": "2Performant",
-				"useLineColorForBulletBorder": true,
-				"valueField": "2Performant_sales_nr",
-				"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-			}, {
-				"id": "g4",
-				"valueAxis": "v2",
-				"bullet": "round",
-				"bulletBorderAlpha": 1,
-				"bulletColor": "#FFFFFF",
-				"bulletSize": 5,
-				"hideBulletsCount": 50,
-				"lineThickness": 2,
-				"lineColor": "#ff851b",
-				//"type": "smoothedLine",
-				//"dashLength": 5,
-				"title": "ProfitShare",
-				"useLineColorForBulletBorder": true,
-				"valueField": "ProfitShare_sales_nr",
-				"balloonText": "[[title]]<br /><b style='font-size: 130%'>[[value]]</b>"
-			}],
-		"chartScrollbar": {
-			"graph": "g2",
-			"oppositeAxis": false,
-			"offset": 30,
-			"scrollbarHeight": 50,
-			"backgroundAlpha": 0,
-			"selectedBackgroundAlpha": 0.1,
-			"selectedBackgroundColor": "#888888",
-			"graphFillAlpha": 0,
-			"graphLineAlpha": 0.5,
-			"selectedGraphFillAlpha": 0,
-			"selectedGraphLineAlpha": 1,
-			"autoGridCount": true,
-			"color": "#AAAAAA"
-		},
-		"chartCursor": {
-			"pan": true,
-			"valueLineEnabled": true,
-			"valueLineBalloonEnabled": true,
-			"cursorAlpha": 0,
-			"valueLineAlpha": 0.2
-		},
-		"categoryField": "date",
-		"categoryAxis": {
-			"parseDates": true,
-			"dashLength": 1,
-			"minorGridEnabled": true
-		},
-		"legend": {
-			"useGraphSettings": true,
-			"position": "top"
-		},
-		"balloon": {
-			"borderThickness": 1,
-			"shadowAlpha": 0
-		},
-		"export": {
-			"enabled": true
-		},
-		"dataProvider": <?php echo $performance_data;?>
+		"dataProvider": <?php echo $profits_json;?>
 	});
 </script>
 
 <?php
 
-$advertiser_data = [
+$_advertiser_data = [
 	'clicks' => 4529,
 	'conversions' => 527,
-	'commision_amount' => 4738.00,
+	'commision_amount' => 1738.00,
 	'cost' => 2147.33,
-	'profit' => 2590.67,
-	'conversion_rate' => 70,
-	'revenue_click' => 4.44,
-	'cpc' => 3.12,
-	'profit_click' => 2.44,
 	'time_lag' => '',
-	'rma_volum' => '87%',
-	'rma_value' => '90%',
+	'rma_volume' => 87,
+	'rma_value' => 90,
 ];
 
-if ($advertiser_data['conversion_rate'] >= 80) {
+
+if ($advertiser_data['conversion_rate'] >= 10) {
     $advertiser_data['conversion_rate_thumbs'] = 'fa-thumbs-o-up';
     $advertiser_data['conversion_rate_type'] = 'green';
-} else if ($advertiser_data['conversion_rate'] >= 70) {
+} else if ($advertiser_data['conversion_rate'] >= 3) {
     $advertiser_data['conversion_rate_thumbs'] = 'fa-thumbs-o-up';
     $advertiser_data['conversion_rate_type'] = 'orange';
 } else {
@@ -331,8 +174,15 @@ if ($advertiser_data['conversion_rate'] >= 80) {
     $advertiser_data['conversion_rate_type'] = 'red';
 }
 
+if ($advertiser_data['profit'] > 0) {
+    $advertiser_data['profit_thumbs'] = 'fa-thumbs-o-up';
+    $advertiser_data['profit_type'] = 'green';
+} else {
+    $advertiser_data['profit_thumbs'] = 'fa-thumbs-o-down';
+    $advertiser_data['profit_type'] = 'red';
+}
+
 if ($advertiser_data['cost'] > 0) {
-	$advertiser_data['roas'] = number_format($advertiser_data['commision_amount'] / $advertiser_data['cost'], 2, '.', '');
 	if ($advertiser_data['roas'] > 1) {
         $advertiser_data['roas_type'] = 'green';
 	} else {
@@ -343,6 +193,28 @@ if ($advertiser_data['cost'] > 0) {
     $advertiser_data['roas_type'] = 'aqua';
 }
 
+
+if ($advertiser_data['rma_volume'] >= 90) {
+	$advertiser_data['rma_volume_thumbs'] = 'fa-thumbs-o-up';
+	$advertiser_data['rma_volume_type'] = 'green';
+} else if ($advertiser_data['rma_volume'] >= 80) {
+	$advertiser_data['rma_volume_thumbs'] = 'fa-thumbs-o-up';
+	$advertiser_data['rma_volume_type'] = 'orange';
+} else {
+	$advertiser_data['rma_volume_thumbs'] = 'fa-thumbs-o-down';
+	$advertiser_data['rma_volume_type'] = 'red';
+}
+
+if ($advertiser_data['rma_value'] >= 90) {
+	$advertiser_data['rma_value_thumbs'] = 'fa-thumbs-o-up';
+	$advertiser_data['rma_value_type'] = 'green';
+} else if ($advertiser_data['rma_value'] >= 80) {
+	$advertiser_data['rma_value_thumbs'] = 'fa-thumbs-o-up';
+	$advertiser_data['rma_value_type'] = 'orange';
+} else {
+	$advertiser_data['rma_value_thumbs'] = 'fa-thumbs-o-down';
+	$advertiser_data['rma_value_type'] = 'red';
+}
 ?>
 
 
@@ -358,9 +230,19 @@ if ($advertiser_data['cost'] > 0) {
 						<h3 class="box-title pull-left"><i class="fa fa-th-list"></i> Advertiser report</h3>
 						
 						<div class="pull-left col-md-2">
-							<select name="advertiser" id="advertiser">
-								<option value="click_date" <?php if ($advertiser == 'adv1') echo 'selected="selected"';?>>adv1</option>
-								<option value="conversion_date" <?php if ($advertiser == 'adv2') echo 'selected="selected"';?>>adv2</option>
+							<?php
+							echo Html::activeDropDownList(
+								new Sale(),
+								'advertiser',
+								ArrayHelper::map($advertisers, 'advertiser', 'advertiser'),
+								['value' => $advertiser]
+							)
+							?>
+						</div>
+						<div class="pull-left col-md-2">
+							<select name="date_type" id="date_type">
+								<option value="click_date" <?php if ($date_type == 'click_date') echo 'selected="selected"';?>>Click Date</option>
+								<option value="conversion_date" <?php if ($date_type == 'conversion_date') echo 'selected="selected"';?>>Conversion Date</option>
 							</select>
 						</div>
 						
@@ -431,12 +313,31 @@ if ($advertiser_data['cost'] > 0) {
 				</div>
 			</div>
 			
+			
+			<div class="col-md-2 col-sm-6 col-xs-12">
+				<div class="info-box bg-<?=$advertiser_data['conversion_rate_type'];?>">
+					<span class="info-box-icon"><i class="fa <?=$advertiser_data['conversion_rate_thumbs'];?>"></i></span>
+					
+					<div class="info-box-content">
+						<span class="info-box-text">Conversion Rate</span>
+						<span class="info-box-number"><?=$advertiser_data['conversion_rate'];?>%</span>
+						
+						<div class="progress">
+							<div class="progress-bar" style="width: <?=$advertiser_data['conversion_rate'];?>%"></div>
+						</div>
+						<span class="progress-description"><?=$advertiser_data['clicks'];?> / <?=$advertiser_data['conversions'];?></span>
+					</div>
+					<!-- /.info-box-content -->
+				</div>
+				<!-- /.info-box -->
+			</div>
+			
 			<div class="col-md-2 col-sm-6 col-xs-12">
 				<div class="info-box">
 					<span class="info-box-icon bg-aqua"><i class="fa fa-money"></i></span>
 					
 					<div class="info-box-content">
-						<span class="info-box-text">Commision Amount</span>
+						<span class="info-box-text">Commision</span>
 						<span class="info-box-number"><?=$advertiser_data['commision_amount'];?></span>
 					</div>
 				</div>
@@ -455,7 +356,7 @@ if ($advertiser_data['cost'] > 0) {
 			
 			<div class="col-md-2 col-sm-6 col-xs-12">
 				<div class="info-box">
-					<span class="info-box-icon bg-aqua"><i class="fa fa-dollar"></i></span>
+					<span class="info-box-icon bg-<?=$advertiser_data['profit_type'];?>"><i class="fa fa-dollar"></i></span>
 					
 					<div class="info-box-content">
 						<span class="info-box-text">Profit</span>
@@ -466,27 +367,22 @@ if ($advertiser_data['cost'] > 0) {
 			
 			<div class="clearfix"></div>
 			
-			<div class="col-md-2 col-sm-6 col-xs-12">
-				<div class="info-box bg-<?=$advertiser_data['conversion_rate_type'];?>">
-					<span class="info-box-icon"><i class="fa <?=$advertiser_data['conversion_rate_thumbs'];?>"></i></span>
-					
-					<div class="info-box-content">
-						<span class="info-box-text">Conversion Rate</span>
-						<span class="info-box-number"><?=$advertiser_data['clicks'];?> / <?=$advertiser_data['conversions'];?></span>
-						
-						<div class="progress">
-							<div class="progress-bar" style="width: <?=$advertiser_data['conversion_rate'];?>%"></div>
-						</div>
-						<span class="progress-description">
-                        <?=$advertiser_data['conversion_rate'];?>%
-                  </span>
-					</div>
-					<!-- /.info-box-content -->
-				</div>
-				<!-- /.info-box -->
-			</div>
 			
 			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="small-box bg-green">
+					<div class="inner">
+						<h3><?=$advertiser_data['revenue_click'];?></h3>
+						
+						<p>Revenue / Click</p>
+					</div>
+					<div class="iconn">
+						<i class="fa fa-money"></i> / <i class="fa fa-mouse-pointer"></i>
+					</div>
+					<a href="#" class="small-box-footer">&nbsp;</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
 				<div class="info-box">
 					<span class="info-box-icon bg-aqua"><i class="fa fa-money"></i><i class="fa fa-mouse-pointer"></i></span>
 					
@@ -497,7 +393,22 @@ if ($advertiser_data['cost'] > 0) {
 				</div>
 			</div>
 			
+			
 			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="small-box bg-orange">
+					<div class="inner">
+						<h3><?=$advertiser_data['cpc'];?></h3>
+						
+						<p>Cost / Click</p>
+					</div>
+					<div class="iconn">
+						<i class="fa fa-credit-card"></i> / <i class="fa fa-mouse-pointer"></i>
+					</div>
+					<a class="small-box-footer">CPC</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
 				<div class="info-box">
 					<span class="info-box-icon bg-aqua"><i class="fa fa-credit-card"></i><i class="fa fa-mouse-pointer"></i></span>
 					
@@ -508,7 +419,22 @@ if ($advertiser_data['cost'] > 0) {
 				</div>
 			</div>
 			
+			
 			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="small-box bg-<?=$advertiser_data['profit_type'];?>">
+					<div class="inner">
+						<h3><?=$advertiser_data['profit_click'];?></h3>
+						
+						<p>Profit / Click</p>
+					</div>
+					<div class="iconn">
+						<i class="fa fa-dollar"></i> / <i class="fa fa-mouse-pointer"></i>
+					</div>
+					<a class="small-box-footer">&nbsp;</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
 				<div class="info-box">
 					<span class="info-box-icon bg-aqua"><i class="fa fa-dollar"></i><i class="fa fa-mouse-pointer"></i></span>
 					
@@ -519,13 +445,93 @@ if ($advertiser_data['cost'] > 0) {
 				</div>
 			</div>
 			
+			
 			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="small-box bg-<?=$advertiser_data['roas_type'];?>">
+					<div class="inner">
+						<h3><?=$advertiser_data['roas'];?></h3>
+						
+						<p>Commision / Cost</p>
+					</div>
+					<div class="iconn">
+						<i class="fa fa-money"></i> / <i class="fa fa-credit-card"></i>
+					</div>
+					<a class="small-box-footer">ROAS</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
 				<div class="info-box">
 					<span class="info-box-icon bg-<?=$advertiser_data['roas_type'];?>"><i class="fa fa-star"></i></span>
 					
 					<div class="info-box-content">
 						<span class="info-box-text">ROAS</span>
 						<span class="info-box-number"><?=$advertiser_data['roas'];?></span>
+					</div>
+				</div>
+			</div>
+			
+			
+			
+			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="info-box small-box bg-<?=$advertiser_data['rma_volume_type'];?>">
+					
+					<div class="inner">
+						<h3><?=$advertiser_data['rma_volume'];?>%</h3>
+						
+						<div style="height: 18px;">&nbsp;</div>
+						
+						<div class="progress">
+							<div class="progress-bar" style="width: <?=$advertiser_data['rma_volume'];?>%"></div>
+						</div>
+					</div>
+					<div class="iconn">
+						<i class="fa <?=$advertiser_data['rma_value_thumbs'];?>"></i>
+					</div>
+					
+					<a class="small-box-footer">RMA Volume</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
+				<div class="info-box">
+					<span class="info-box-icon bg-aqua"><i class="fa fa-calendar-check-o"></i></span>
+					
+					<div class="info-box-content">
+						<span class="info-box-text">RMA Volume</span>
+						<span class="info-box-number"><?=$advertiser_data['rma_volume'];?></span>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="col-md-2 col-sm-6 col-xs-12">
+				<!-- small box -->
+				<div class="info-box small-box bg-<?=$advertiser_data['rma_value_type'];?>">
+					
+					<div class="inner">
+						<h3><?=$advertiser_data['rma_value'];?>%</h3>
+						
+						<div style="height: 18px;">&nbsp;</div>
+						
+						<div class="progress">
+							<div class="progress-bar" style="width: <?=$advertiser_data['rma_value'];?>%"></div>
+						</div>
+					</div>
+					<div class="iconn">
+						<i class="fa <?=$advertiser_data['rma_value_thumbs'];?>"></i>
+					</div>
+					
+					<a class="small-box-footer">RMA Value</a>
+				</div>
+			</div>
+			<div class="col-md-2 col-sm-6 col-xs-12 hidden">
+				<div class="info-box">
+					<span class="info-box-icon bg-aqua"><i class="fa fa-calendar-check-o"></i></span>
+					
+					<div class="info-box-content">
+						<span class="info-box-text">RMA Value</span>
+						<span class="info-box-number"><?=$advertiser_data['rma_value'];?></span>
 					</div>
 				</div>
 			</div>
@@ -542,28 +548,7 @@ if ($advertiser_data['cost'] > 0) {
 					</div>
 				</div>
 			</div>
-			
-			<div class="col-md-2 col-sm-6 col-xs-12">
-				<div class="info-box">
-					<span class="info-box-icon bg-aqua"><i class="fa fa-calendar-check-o"></i></span>
-					
-					<div class="info-box-content">
-						<span class="info-box-text">RMA Volume</span>
-						<span class="info-box-number"><?=$advertiser_data['rma_volum'];?></span>
-					</div>
-				</div>
-			</div>
-			
-			<div class="col-md-2 col-sm-6 col-xs-12">
-				<div class="info-box">
-					<span class="info-box-icon bg-aqua"><i class="fa fa-calendar-check-o"></i></span>
-					
-					<div class="info-box-content">
-						<span class="info-box-text">RMA Value</span>
-						<span class="info-box-number"><?=$advertiser_data['rma_value'];?></span>
-					</div>
-				</div>
-			</div>
+	
 			
 			<img class="hidden" src="/images/demo.png" width="1024" alt="">
 			
@@ -580,7 +565,7 @@ if ($advertiser_data['cost'] > 0) {
 				<!-- LINE CHART -->
 				<div class="box box-info">
 					<div class="box-header with-border">
-						<h3 class="box-title pull-left">Sales Performance</h3>
+						<h3 class="box-title pull-left">Sales / Costs / Profit</h3>
 						
 						<div class="box-tools pull-right">
 							<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -589,7 +574,7 @@ if ($advertiser_data['cost'] > 0) {
 						</div>
 					</div>
 					<div class="box-body chart-responsive">
-						<div id="chartdiv_sales"></div>
+						<div id="chartdiv_profit"></div>
 					</div>
 					<!-- /.box-body -->
 				</div>
@@ -602,7 +587,7 @@ if ($advertiser_data['cost'] > 0) {
 				<!-- LINE CHART -->
 				<div class="box box-info">
 					<div class="box-header with-border">
-						<h3 class="box-title">Conversions Performance</h3>
+						<h3 class="box-title">ROAS / CPC / Cost</h3>
 						
 						<div class="box-tools pull-right">
 							<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -611,7 +596,13 @@ if ($advertiser_data['cost'] > 0) {
 						</div>
 					</div>
 					<div class="box-body chart-responsive">
-						<div id="chartdiv_conversions"></div>
+						<div id="chartdiv_roas">
+							<?php
+							echo '<pre>';
+							print_r($ROAS_data);
+							echo '</pre>';
+							?>
+						</div>
 					</div>
 					<!-- /.box-body -->
 				</div>

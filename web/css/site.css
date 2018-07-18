@@ -113,3 +113,15 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.small-box .iconn {
+    font-size: 35px;
+    top: 5px;
+    -webkit-transition: all .3s linear;
+    -o-transition: all .3s linear;
+    transition: all .3s linear;
+    position: absolute;
+    right: 10px;
+    z-index: 0;
+    color: rgba(0,0,0,0.15);
+}

@@ -313,7 +313,7 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 								
 								?>
 								<tr>
-									<td><?=$row['advertiser'];?></td>
+									<td><a target="_blank" href="/report/advertiser?date_range=<?=$date_range;?>&date_type=<?=$date_type;?>&advertiser=<?=$row['advertiser'];?>"><?=$row['advertiser'];?></a></td>
 									<td align="right"><?=$row['profit_garantat'];?></td>
 									<td align="right"><?=$row['profit_estimat'];?></td>
 									<td align="right"><?=$row['ra_valoare'];?>%</td>
