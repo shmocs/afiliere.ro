@@ -22,6 +22,15 @@ $(function () {
 		e.preventDefault();
 	});
 
+	$('.chartdiv_profit_interval').on('click', function (e) {
+
+		var interval = $(this).html();
+		$('#chartdiv_profit_interval').val(interval);
+
+		url = keepSearchingURL();
+		window.location.href = url;
+	});
+
 
 	$('#sale-advertiser').on('change', function (e) {
 		url = keepSearchingURL();
@@ -39,19 +48,23 @@ $(function () {
 	});
 
 
+
+
 	function keepSearchingURL() {
-		var _date_range, _date_type, _commission_type, _advertiser;
+		var _date_range, _date_type, _commission_type, _advertiser, _chartdiv_profit_interval;
 
 		_date_range = $("input[name=date_range]").val();
 		_date_type = $('#date_type').val();
 		_commission_type = $('#commission_type').val();
 		_advertiser = $('#sale-advertiser').val();
+		_chartdiv_profit_interval = $('#chartdiv_profit_interval').val();
 
 		url = window.location.href;
 		url = updateQueryStringParameter(url, 'date_range', _date_range);
 		url = updateQueryStringParameter(url, 'date_type', _date_type);
 		url = updateQueryStringParameter(url, 'commission_type', _commission_type);
 		url = updateQueryStringParameter(url, 'advertiser', _advertiser);
+		url = updateQueryStringParameter(url, 'chartdiv_profit_interval', _chartdiv_profit_interval);
 
 		return url;
 	}

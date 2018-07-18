@@ -95,20 +95,30 @@ class Reports
     }
 	
 	
-	public static function getAdvertiserDataChartProfits($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $start_date, $end_date) {
+	public static function getAdvertiserDataChartProfits($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $chartdiv_profit_interval, $start_date, $end_date) {
         
         $status_sql = " = 'accepted'";
         if ($commission_type == 'accepted_pending') {
             $status_sql = " IN ('accepted', 'pending')";
         }
         
+        $date_sales = "DATE(`".$date_type."`)";
+        $date_costs = "DATE(`campaign_date`)";
+        if ($chartdiv_profit_interval == 7) {
+            $date_sales = "CONCAT(YEAR({$date_type}), '/', WEEK({$date_type}))";
+            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', WEEK(`campaign_date`))";
+        }
+        if ($chartdiv_profit_interval == 31) {
+            $date_sales = "CONCAT(YEAR({$date_type}), '/', WEEK({$date_type}))";
+            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', WEEK(`campaign_date`))";
+        }
         
         $sql = "
         SELECT `virt`.*
         FROM (
             (
                 SELECT
-                    DATE(`".$date_type."`) AS `date`,
+                    {$date_sales} AS `date`,
                     SUM(`amount`) AS `sum`,
                     'sale' AS `value_type`
                 FROM `sale`
@@ -121,7 +131,7 @@ class Reports
             ) UNION ALL (
             
                 SELECT
-                    DATE(`campaign_date`) AS `date`,
+                    {$date_costs} AS `date`,
                     SUM(`cost`) as `sum`,
                     'cost' AS `value_type`
                 FROM `cost`

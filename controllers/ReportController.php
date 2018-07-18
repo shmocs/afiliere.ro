@@ -66,6 +66,11 @@ class ReportController extends Controller
 		    $date_type = $params['date_type'];
 	    }
     
+        $chartdiv_profit_interval = 1;
+	    if (isset($params['chartdiv_profit_interval'])) {
+            $chartdiv_profit_interval = $params['chartdiv_profit_interval'];
+	    }
+	    
         $commission_type = 'accepted';
 	    if (isset($params['commission_type'])) {
             $commission_type = $params['commission_type'];
@@ -86,7 +91,7 @@ class ReportController extends Controller
 		    $advertiser = $params['advertiser'];
 	    }
 	
-	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $commission_type, $start_date, $end_date);
+	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $commission_type, $chartdiv_profit_interval, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
 	
 	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $commission_type, $start_date, $end_date);
@@ -106,6 +111,7 @@ class ReportController extends Controller
 			    'date_type' => $date_type,
 			    'commission_type' => $commission_type,
 			    'date_range' => $start_date . ' - ' . $end_date,
+			    'chartdiv_profit_interval' => $chartdiv_profit_interval,
 		    ]
 	    );
     }
