@@ -203,7 +203,132 @@ class Reports
 	}
 
 	
-	public static function getAdvertiserDataChartROAS($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $start_date, $end_date) {
+	public static function getAdvertiserDataChartROAS($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $chartdiv_profit_interval, $start_date, $end_date) {
+        
+        $status_sql = " = 'accepted'";
+        if ($commission_type == 'accepted_pending') {
+            $status_sql = " IN ('accepted', 'pending')";
+        }
+        
+        $date_sales = "DATE(`".$date_type."`)";
+        $date_costs = "DATE(`campaign_date`)";
+        if ($chartdiv_profit_interval == 7) {
+            $date_sales = "DATE_FORMAT({$date_type}, '%x/%v')";
+            $date_costs = "DATE_FORMAT(`campaign_date`, '%x/%v')";
+        }
+        if ($chartdiv_profit_interval == 31) {
+            $date_sales = "DATE_FORMAT({$date_type}, '%Y-%m')";
+            $date_costs = "DATE_FORMAT(`campaign_date`, '%Y-%m')";
+        }
+        
+        $sql = "
+        SELECT `virt`.*
+        FROM (
+            (
+                SELECT
+                    {$date_sales} AS `date`,
+                    SUM(`amount`) AS `sum`,
+                    0 AS `clicks`,
+                    'sale' AS `value_type`
+                FROM `sale`
+                WHERE 1
+                    AND `status` {$status_sql}
+                    AND `advertiser` = '".$advertiser."'
+                    AND `{$date_type}` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
+                GROUP BY `date`
+                
+            ) UNION ALL (
+            
+                SELECT
+                    {$date_costs} AS `date`,
+                    SUM(`cost`) as `sum`,
+                    SUM(`clicks`) as `clicks`,
+                    'cost' AS `value_type`
+                FROM `cost`
+                WHERE 1
+                    AND `advertiser` = '".$advertiser."'
+                    AND `campaign_date` BETWEEN '{$start_date}' AND '{$end_date} 23:59:59'
+                GROUP BY `date`
+            )
+        ) AS `virt`
+        
+        ORDER BY `virt`.`date` ASC
+    	";
+        
+        $rows = Yii::$app->db->createCommand($sql)->queryAll();
+        //\yii\helpers\VarDumper::dump($rows, 10, true);
+        
+        $data = $record = [];
+        $keep_date = '';
+        
+        foreach ($rows as $row) {
+            
+            if ($keep_date != $row['date']) {
+                
+                if (!empty($keep_date)) {
+                    $data[] = $record[$keep_date];
+                }
+                
+                
+                $date_label = '';
+                $pairs = explode('/', $row['date']);
+                if (isset($pairs[1])) {
+                    $year = $pairs[0];
+                    $week = $pairs[1];
+                    
+                    $dto = new \DateTime();
+                    $ret['week_start'] = $dto->setISODate($year, $week)->format('Y-m-d');
+                    $ret['week_end'] = $dto->modify('+6 days')->format('Y-m-d');
+                    $date_label = ' ('.join($ret, ':').')';
+                }
+                
+                $keep_date = $row['date'];
+                $record = [
+                    $keep_date => [
+                        'date' => $keep_date . $date_label,
+                        'sales' => 0,
+                        'costs' => 0,
+                        'clicks' => 0,
+                        'cpc' => 0,
+                        'roas' => 0,
+                    ]
+                ];
+                
+            }
+    
+    
+            if ($row['value_type'] == 'sale') {
+                $record[$keep_date]['sales'] += $row['sum'];
+            }
+            if ($row['value_type'] == 'cost') {
+                $record[$keep_date]['costs'] += $row['sum'];
+            }
+            $record[$keep_date]['clicks'] += $row['clicks'];
+    
+        }
+        if (!empty($record)) {
+            $data[] = $record[$keep_date];
+        }
+        
+        foreach ($data as $idx => $row) {
+            if ($row['clicks'] != 0) {
+                $data[$idx]['cpc'] = number_format($row['costs'] / $row['clicks'], 2, '.', '');
+            } else {
+                $data[$idx]['cpc'] = 0;
+            }
+            
+            if ($data[$idx]['costs'] != 0) {
+                $data[$idx]['roas'] = number_format($row['sales'] / $row['costs'], 2, '.', '');
+            } else {
+                $data[$idx]['roas'] = 0;
+            }
+        }
+        //\yii\helpers\VarDumper::dump($data, 10, true);
+        
+        return $data;
+    }
+    
+    public static function _getAdvertiserDataChartROAS($advertiser, $date_type = 'click_date', $commission_type = 'accepted', $chartdiv_profit_interval, $start_date, $end_date) {
         
         $status_sql = " = 'accepted'";
         if ($commission_type == 'accepted_pending') {

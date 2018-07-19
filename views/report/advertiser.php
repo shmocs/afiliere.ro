@@ -232,7 +232,10 @@ $ROAS_json = json_encode($ROAS_data);
 			//"parseDates": true,
 			//"dashLength": 1,
 			//"minorGridEnabled": true
-			"labelRotation": 45
+			"labelRotation": 45,
+			"labelFunction": function(valueText, serialDataItem, categoryAxis) {
+				return valueText.replace(/(.*)\s.*/, '$1');
+			},
 		},
 		"legend": {
 			"useGraphSettings": true,

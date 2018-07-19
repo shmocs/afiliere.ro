@@ -94,7 +94,7 @@ class ReportController extends Controller
 	    $profits_data = Reports::getAdvertiserDataChartProfits($advertiser, $date_type, $commission_type, $chartdiv_profit_interval, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
 	
-	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $commission_type, $start_date, $end_date);
+	    $ROAS_data = Reports::getAdvertiserDataChartROAS($advertiser, $date_type, $commission_type, $chartdiv_profit_interval, $start_date, $end_date);
         //\yii\helpers\VarDumper::dump($performance_data, 10, true);
 	
 	    $advertiser_data = Reports::getAdvertiserReport($advertiser, $date_type, $commission_type, $start_date, $end_date);
