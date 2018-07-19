@@ -315,9 +315,9 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 								<tr>
 									<td><a target="_blank" href="/report/advertiser?date_range=<?=$date_range;?>&date_type=<?=$date_type;?>&advertiser=<?=$row['advertiser'];?>"><?=$row['advertiser'];?></a></td>
 									<td align="right"><?=$row['profit_garantat'];?></td>
-									<td align="right"><?=$row['profit_estimat'];?></td>
+									<td align="right"<?php if ($row['profit_estimat'] < 0) echo ' style="background-color: #f8d7da;"';?>><?=$row['profit_estimat'];?></td>
 									<td align="right"><?=$row['ra_valoare'];?>%</td>
-									<td align="right" title="<?=$ram_valoare_tooltip;?>"><?=$row['ram_valoare'];?>%</td>
+									<td align="right" title="<?=$ram_valoare_tooltip;?>" <?php if ($row['ram_valoare'] < 75) echo ' style="background-color: #f8d7da;"';?>><?=$row['ram_valoare'];?>%</td>
 									<td align="right"><?=$row['ra_volum'];?>%</td>
 									<td align="right" title="<?=$ram_volum_tooltip;?>"><?=$row['ram_volum'];?>%</td>
 									<td align="right"><?=$row['cost'];?></td>
