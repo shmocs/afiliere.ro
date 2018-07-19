@@ -66,8 +66,13 @@ class SiteController extends Controller
 	    }
 	
 	    $params = Yii::$app->request->get();
-	
-	    $start_date = date('Y-m-d', strtotime('last month'));
+    
+        $chartdiv_profit_interval = 7;
+        if (isset($params['chartdiv_profit_interval'])) {
+            $chartdiv_profit_interval = $params['chartdiv_profit_interval'];
+        }
+    
+        $start_date = date('Y-m-d', strtotime('-3 month'));
 	    $end_date = date('Y-m-d');
 		
 	    if (isset($params['date_range'])) {
@@ -77,7 +82,7 @@ class SiteController extends Controller
 	    }
 	
 	    
-	    $performance_data = \app\models\Sale::getDataChart01($start_date, $end_date);
+	    $performance_data = \app\models\Sale::getDataChart01($chartdiv_profit_interval, $start_date, $end_date);
 		//\yii\helpers\VarDumper::dump($performance_data, 10, true);
 
 	    
@@ -90,6 +95,7 @@ class SiteController extends Controller
         	    'performance_data' => $performance_data,
         	    'profits_data' => $profits_data,
         	    'date_range' => $start_date . ' - ' . $end_date,
+                'chartdiv_profit_interval' => $chartdiv_profit_interval,
 	        ]
         );
     }

@@ -171,7 +171,7 @@ class Reports
                     $dto = new \DateTime();
                     $ret['week_start'] = $dto->setISODate($year, $week)->format('Y-m-d');
                     $ret['week_end'] = $dto->modify('+6 days')->format('Y-m-d');
-                    $date_label = ' ('.join($ret, '-').')';
+                    $date_label = ' ('.join($ret, ':').')';
                 }
 				
 				$keep_date = $row['date'];

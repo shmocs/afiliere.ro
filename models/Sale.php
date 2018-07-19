@@ -163,9 +163,19 @@ class Sale extends \yii\db\ActiveRecord
 	}
 	
 	
-	public static function getDataChart01($start_date, $end_date) {
-		$sql = "
-			SELECT DATE(`conversion_date`) AS `date`, `platform`, SUM(`amount`) AS `sum`, SUM(1) AS `cnt`
+	public static function getDataChart01($chartdiv_profit_interval, $start_date, $end_date) {
+        
+        $date_sales = "DATE(`conversion_date`)";
+        if ($chartdiv_profit_interval == 7) {
+            $date_sales = "DATE_FORMAT(`conversion_date`, '%x/%v')";
+        }
+        if ($chartdiv_profit_interval == 31) {
+            $date_sales = "DATE_FORMAT(`conversion_date`, '%Y-%m')";
+        }
+        
+        
+        $sql = "
+			SELECT {$date_sales} AS `date`, `platform`, SUM(`amount`) AS `sum`, SUM(1) AS `cnt`
 			FROM `sale`
 			WHERE 1
 				AND `conversion_date` BETWEEN '{$start_date}' AND '{$end_date}'
@@ -184,11 +194,23 @@ class Sale extends \yii\db\ActiveRecord
 				if (!empty($keep_date)) {
 					$data[] = $record[$keep_date];
 				}
+                
+                $date_label = '';
+                $pairs = explode('/', $sale['date']);
+                if (isset($pairs[1])) {
+                    $year = $pairs[0];
+                    $week = $pairs[1];
+                    
+                    $dto = new \DateTime();
+                    $ret['week_start'] = $dto->setISODate($year, $week)->format('Y-m-d');
+                    $ret['week_end'] = $dto->modify('+6 days')->format('Y-m-d');
+                    $date_label = ' ('.join($ret, ':').')';
+                }
 				
 				$keep_date = $sale['date'];
 				$record = [
 					$keep_date => [
-						'date' => $keep_date,
+						'date' => $keep_date . $date_label,
 						'total_sales' => 0,
 						'total_conversions' => 0
 					]

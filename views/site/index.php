@@ -152,9 +152,13 @@ $profits_json = json_encode($profits_data);
 		},
 		"categoryField": "date",
 		"categoryAxis": {
-			"parseDates": true,
-			"dashLength": 1,
-			"minorGridEnabled": true
+			// "parseDates": false,
+			// "dashLength": 1,
+			// "minorGridEnabled": true,
+			"labelRotation": 45,
+			"labelFunction": function(valueText, serialDataItem, categoryAxis) {
+				return valueText.replace(/(.*)\s.*/, '$1');
+			},
 		},
 		"legend": {
 			"useGraphSettings": true,
@@ -166,32 +170,6 @@ $profits_json = json_encode($profits_data);
 		},
 		"export": {
 			"enabled": true
-		},
-
-		"periodSelector": {
-			"position": "top",
-			"dateFormat": "YYYY-MM-DD",
-			"inputFieldWidth": 100,
-			"periods": [{
-				"period": "DD",
-				"count": 1,
-				"label": "1 day"
-			}, {
-				"period": "DD",
-				"count": 7,
-				"label": "1 week",
-			}, {
-				"period": "MM",
-				"count": 1,
-				"label": "1 month"
-			}, {
-				"period": "MM",
-				"count": 3,
-				"label": "3 months"
-			}, {
-				"period": "MAX",
-				"label": "MAX"
-			}]
 		},
 		
 		"dataProvider": <?php echo $performance_data;?>
@@ -307,10 +285,15 @@ $profits_json = json_encode($profits_data);
 		},
 		"categoryField": "date",
 		"categoryAxis": {
-			"parseDates": true,
-			"dashLength": 1,
-			"minorGridEnabled": true
+			//"parseDates": false,
+			//"dashLength": 1,
+			//"minorGridEnabled": true,
+			"labelRotation": 45,
+			"labelFunction": function(valueText, serialDataItem, categoryAxis) {
+				return valueText.replace(/(.*)\s.*/, '$1');
+			},
 		},
+		
 		"legend": {
 			"useGraphSettings": true,
 			"position": "top"
@@ -623,36 +606,66 @@ $profits_json = json_encode($profits_data);
 
 <!-- HTML -->
 <div class="row">
+	<div class="col-md-12">
+		<div class="box box-default">
+			<div class="box-header">
+				
+				<i class="fa fa-calendar"></i>
+				<h3 class="box-title">Interval filters</h3>
+				
+				
+				
+				<div class="col-md-6 col-xs-12 pull-right">
+					
+					<a href="#" class="pull-right btn btn-primary filter_date_range">Submit</a>
+					<div class="drp-container pull-right">
+                        <?php
+                        echo DateRangePicker::widget([
+                            'name'=>'date_range',
+                            'value' => $date_range,
+                            'presetDropdown'=>true,
+                            'hideInput'=>true,
+                            
+                            'pluginOptions' => [
+                                'opens'=>'right',
+                                'locale' => [
+                                    'cancelLabel' => 'Clear',
+                                    'format' => 'YYYY-MM-DD',
+                                ]
+                            ],
+                        
+                        ]);
+                        ?>
+						
+					</div>
+					
+					
+				</div>
+				
+				<div class="col-md-3 col-sx-12 pull-right">
+					<div class="btn-group pull-right">
+						<button type="button" class="btn btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 1) echo ' active';?>">1</button>
+						<button type="button" class="btn btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 7) echo ' active';?>">7</button>
+						<button type="button" class="btn btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 31) echo ' active';?>">31</button>
+						<input type="hidden" name="chartdiv_profit_interval" id="chartdiv_profit_interval" value="<?=$chartdiv_profit_interval;?>" />
+					</div>
+				</div>
+			
+			</div>
+			
+		</div>
+	</div>
+
+
+</div>
+
+<div class="row">
 	<div class="col-md-6">
 		
 		<!-- LINE CHART -->
 		<div class="box box-info">
 			<div class="box-header with-border">
 				<h3 class="box-title pull-left">Sales Performance</h3>
-				
-				<div class="drp-container col-md-5 col-xs-12">
-					<?php
-					echo DateRangePicker::widget([
-						'name'=>'date_range',
-						'value' => $date_range,
-						'presetDropdown'=>true,
-						'hideInput'=>true,
-						
-						'pluginOptions' => [
-							'opens'=>'right',
-							'locale' => [
-								'cancelLabel' => 'Clear',
-								'format' => 'YYYY-MM-DD',
-							]
-						],
-					
-					]);
-					?>
-				</div>
-				<div class="col-md-2">
-					
-					<a href="#" class="btn btn-primary dashboard_filter_date_range">Submit</a>
-				</div>
 				
 				<div class="box-tools pull-right">
 					<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>

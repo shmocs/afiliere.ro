@@ -675,9 +675,9 @@ if ($advertiser_data['rma_value'] >= 90) {
 					<div class="box-header with-border">
 						<h3 class="box-title pull-left">Sales / Costs / Profit</h3>
 						
-						<div class="col-md-3 col-sx-12">
+						<div class="col-md-6 col-sx-12">
 							
-							<div class="btn-group">
+							<div class="btn-group pull-right">
 								<button type="button" class="btn btn-xs btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 1) echo ' active';?>">1</button>
 								<button type="button" class="btn btn-xs btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 7) echo ' active';?>">7</button>
 								<button type="button" class="btn btn-xs btn-default chartdiv_profit_interval<?php if ($chartdiv_profit_interval == 31) echo ' active';?>">31</button>
