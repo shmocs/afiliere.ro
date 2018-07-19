@@ -10,6 +10,8 @@ namespace yii\reports;
 
 use app\models\Sale;
 use app\models\Cost;
+use Faker\Provider\DateTime;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Yii;
 use yii\db\Exception;
 use yii\helpers\VarDumper;
@@ -105,12 +107,12 @@ class Reports
         $date_sales = "DATE(`".$date_type."`)";
         $date_costs = "DATE(`campaign_date`)";
         if ($chartdiv_profit_interval == 7) {
-            $date_sales = "CONCAT(YEAR({$date_type}), '/', WEEK({$date_type}))";
-            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', WEEK(`campaign_date`))";
+            $date_sales = "DATE_FORMAT({$date_type}, '%x/%v')";
+            $date_costs = "DATE_FORMAT(`campaign_date`, '%x/%v')";
         }
         if ($chartdiv_profit_interval == 31) {
-            $date_sales = "CONCAT(YEAR({$date_type}), '/', MONTH({$date_type}))";
-            $date_costs = "CONCAT(YEAR(`campaign_date`), '/', MONTH(`campaign_date`))";
+            $date_sales = "DATE_FORMAT({$date_type}, '%Y-%m')";
+            $date_costs = "DATE_FORMAT(`campaign_date`, '%Y-%m')";
         }
         
         $sql = "
@@ -158,11 +160,24 @@ class Reports
 				if (!empty($keep_date)) {
 					$data[] = $record[$keep_date];
 				}
+                
+                
+                $date_label = '';
+                $pairs = explode('/', $row['date']);
+                if (isset($pairs[1])) {
+                    $year = $pairs[0];
+                    $week = $pairs[1];
+                    
+                    $dto = new \DateTime();
+                    $ret['week_start'] = $dto->setISODate($year, $week)->format('Y-m-d');
+                    $ret['week_end'] = $dto->modify('+6 days')->format('Y-m-d');
+                    $date_label = ' ('.join($ret, '-').')';
+                }
 				
 				$keep_date = $row['date'];
 				$record = [
 					$keep_date => [
-						'date' => $keep_date,
+						'date' => $keep_date . $date_label,
 						'sales' => 0,
 						'costs' => 0,
 						'profit' => 0,

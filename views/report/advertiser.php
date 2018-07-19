@@ -133,7 +133,15 @@ $ROAS_json = json_encode($ROAS_data);
 			//"parseDates": true,
 			//"dashLength": 1,
 			//"minorGridEnabled": true
-			"labelRotation": 45
+			"labelRotation": 45,
+			"labelFunction": function(valueText, serialDataItem, categoryAxis) {
+				//var pairs = valueText.split('/');
+				//var raw_date = new Date(pairs[0], 0, 1+((pairs[1]-1)*7));
+				//return raw_date.getDate() + '-' + (raw_date.getMonth() + 1);
+				//return "|" + valueText + "|";
+				
+				return valueText.replace(/(.*)\s.*/, '$1');
+			},
 		},
 		"legend": {
 			"useGraphSettings": true,
