@@ -281,7 +281,7 @@ $dataProvider = new \yii\data\ArrayDataProvider([
 								//continue;
 								
 								//nu ma intereseaza sa apara acolo daca nu i-am promovat in perioada aia
-                                if ($row['cost'] == 0 || $row['volum_comisioane_total'] == 0) continue;
+                                if ($row['cost'] == 0 && $row['volum_comisioane_total'] == 0) continue;
 		
 								//VarDumper::dump($row, 10, true);continue;
 								
