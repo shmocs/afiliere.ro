@@ -34,3 +34,5 @@ tests/_support/_generated
 
 /public
 composer.lock
+
+/config/db.php
