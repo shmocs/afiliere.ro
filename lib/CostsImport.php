@@ -78,6 +78,8 @@ class CostsImport
 				$result['messages'] = $this->messages;
                 
                 $result['type'] = $result['_failed'] > 0 ? 'error' : ($result['_duplicates'] > 0 ? ($result['_updated'] > 0 ? 'info' : 'warning') : 'success');
+                //$result['duplicate_rows'] = $this->duplicate_rows;
+                //$result['parsed_rows'] = $this->parsed_rows;
 
 			} else {
 				$result['type'] = 'error';
@@ -191,21 +193,12 @@ class CostsImport
             }
             
             if ($cost) {
-	            /*
-                    2019-09-22|Libris.ro__D: 1|303.14 -> 1.392|303.14
-                    2019-09-23|Libris.ro__D: 1|408.15 -> 1.675|408.15
-                    2019-09-19|Libris.ro__D: 2|544.18 -> 2.383|544.18
-                    2019-09-18|Libris.ro__D: 2|449.47 -> 2.096|449.47
-                    2019-09-17|Libris.ro__D: 2|437.07 -> 2.196|437.07
-                    2019-09-20|Libris.ro__D: 1|363.54 -> 1.541|363.54
-                    2019-09-24|Libris.ro__D: 1|313.81 -> 1.303|313.81
-                    2019-09-30|Libris.ro__D: 1|225.37 -> 1.100|225.37
-	             * */
-            	if ($cost['clicks'] != $record['clicks'] || $cost['cost'] != $record['cost']) {
+                //2019-09-22|Libris.ro__D: 1|303.14 -> 1.392|303.14
+            	if ( (float)$cost['clicks'] != (float)$record['clicks'] || (float)$cost['cost'] != (float)$record['cost']) {
 		            $this->to_update_rows[] = $record;
 		            $this->messages[] = $record['campaign_date'].'|'.$record['campaign_name'].': '.$cost['clicks'].'|'.$cost['cost'].' -> '.$record['clicks'].'|'.$record['cost'];
 	            } else {
-		            $this->duplicate_rows[] = $record;
+		            $this->duplicate_rows[] = [$cost,$record];
 	            }
 	
             } else {
@@ -293,9 +286,9 @@ class CostsImport
     // 1.121,"2.663,79"
 	public function sanitizeNumber($input) {
 	    
-	    $thousands = (float) str_replace('.', '', $input);
+	    $thousands = str_replace('.', '', $input);
 	    $dot_decimal = str_replace(',', '.', $thousands);
-	    $number = $dot_decimal;
+	    $number = floatval($dot_decimal);
 	    
 	    return $number;
     }
