@@ -293,7 +293,7 @@ class CostsImport
     // 1.121,"2.663,79"
 	public function sanitizeNumber($input) {
 	    
-	    $thousands = (int) str_replace('.', '', $input);
+	    $thousands = (float) str_replace('.', '', $input);
 	    $dot_decimal = str_replace(',', '.', $thousands);
 	    $number = $dot_decimal;
 	    
