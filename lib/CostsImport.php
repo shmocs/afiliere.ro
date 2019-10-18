@@ -11,6 +11,7 @@ namespace yii\costs;
 use app\models\Import;
 use Yii;
 use yii\db\Exception;
+use yii\helpers\VarDumper;
 
 class CostsImport
 {
@@ -94,30 +95,32 @@ class CostsImport
 	public function detect_platform() {
 		
 		$allowed_formats = [
-			'Cont,Ziua,Campanie,Clicuri,Cost' => 'AdWords',
+			'Cont,Zi,Campanie,Monedă,Clicuri,Cost' => 'AdWords',
 		];
 		
 		$lines = file($this->filepath);
 		foreach ($allowed_formats as $test => $platform) {
-			if (preg_match('/^'.$test.'/', $lines[4]) || preg_match('/^'.$test.'/', $lines[5]) || preg_match('/^'.$test.'/', $lines[6])) {
+			if (preg_match('/^'.$test.'/', $lines[2]) || preg_match('/^'.$test.'/', $lines[3]) || preg_match('/^'.$test.'/', $lines[4])) {
 				$this->platform = $platform;
 				break;
-			}
+			} else {
+			    //VarDumper::dump($test, 10, true);
+			    //VarDumper::dump($lines[3], 10, true);
+            }
 		}
 		
 	}
 	
 	
 	/*
-		Nume,Raport mngrpmark
-		Tip,Campanie
-		Frecvență,O dată
-		Interval de date,Luna trecută
-		Date,1 iun. 2018-30 iun. 2018
-		Cont,Ziua,Campanie,Clicuri,Cost
-		Afiliere 1,2018-06-02,AloShop.tv__D,32,"4,71"
-		Afiliere 1,2018-06-06,AloShop.tv__D,3,"0,35"
-		Afiliere 1,2018-06-17,AloShop.tv__D,6,"1,11"
+        costuri_adwords
+        17 septembrie 2019 – 30 septembrie 2019
+        Cont,Zi,Campanie,Monedă,Clicuri,Cost
+        Gadget-Review.ro,2019-09-24,Emag.ro__Laptopuri,RON,28,"3,36"
+        Gadget-Review.ro,2019-09-23,Emag.ro__Laptopuri,RON,11,"1,19"
+        Afiliere3,2019-09-27,Carturesti.ro__D,RON,92,"18,73"
+        Afiliere3,2019-09-23,Carturesti.ro__D,RON,169,"38,26"
+	 *
 	 * */
 	
 	public function ParserAdWords() {
@@ -139,15 +142,19 @@ class CostsImport
 				continue;
 			}
 			
-			//Cont,Ziua,Campanie,Clicuri,Cost
-			//Afiliere 1,2018-06-02,AloShop.tv__D,32,"4,71"
 			
+            //Cont,Zi,Campanie,Monedă,Clicuri,Cost
+            //Gadget-Review.ro,2019-09-23,Emag.ro__Laptopuri,RON,1.121,"2.663,79"
+			
+            $clicks = $this->sanitizeNumber($columns[4]);
+            $cost = $this->sanitizeNumber($columns[5]);
+            
 			$row = [
 				'campaign_date'     => $columns[1],
 				'campaign_name'     => $columns[2],
 				'advertiser'        => $advertiser,
-				'clicks'            => $columns[3],
-				'cost'              => str_replace(',', '.', $columns[4]) * 1,
+				'clicks'            => $clicks,
+				'cost'              => $cost,
 			];
 			
 			$rows[] = $row;
@@ -184,7 +191,16 @@ class CostsImport
             }
             
             if ($cost) {
-	            
+	            /*
+                    2019-09-22|Libris.ro__D: 1|303.14 -> 1.392|303.14
+                    2019-09-23|Libris.ro__D: 1|408.15 -> 1.675|408.15
+                    2019-09-19|Libris.ro__D: 2|544.18 -> 2.383|544.18
+                    2019-09-18|Libris.ro__D: 2|449.47 -> 2.096|449.47
+                    2019-09-17|Libris.ro__D: 2|437.07 -> 2.196|437.07
+                    2019-09-20|Libris.ro__D: 1|363.54 -> 1.541|363.54
+                    2019-09-24|Libris.ro__D: 1|313.81 -> 1.303|313.81
+                    2019-09-30|Libris.ro__D: 1|225.37 -> 1.100|225.37
+	             * */
             	if ($cost['clicks'] != $record['clicks'] || $cost['cost'] != $record['cost']) {
 		            $this->to_update_rows[] = $record;
 		            $this->messages[] = $record['campaign_date'].'|'.$record['campaign_name'].': '.$cost['clicks'].'|'.$cost['cost'].' -> '.$record['clicks'].'|'.$record['cost'];
@@ -273,5 +289,14 @@ class CostsImport
 	    
 		return true;
 	}
-	
+    
+    // 1.121,"2.663,79"
+	public function sanitizeNumber($input) {
+	    
+	    $thousands = (int) str_replace('.', '', $input);
+	    $dot_decimal = str_replace(',', '.', $thousands);
+	    $number = $dot_decimal;
+	    
+	    return $number;
+    }
 }
