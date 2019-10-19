@@ -116,6 +116,11 @@ class SalesImport
 	Valoarea Comisionului	in PS este coloana “Valoare Comision Inregistrat” daca statusul comisionului este “In asteptare” si coloana “Valoare Comision Aprobat” daca statusul comisionului este “Aprobat”. In 2P este coloana “Commission Amount (RON)”
 	Refferer	            in PS este coloana “Refferer/Cautare” , in 2P este coloana “Click Referrer”
 	Status	                in PS este coloana “Status” , in 2P este coloana “Status”
+	
+	Daca parametru gclid nu se gaseste in Referrer (in PS este coloana “Refferer/Cautare”, in 2P este coloana “Click Referrer”) preia
+	    - valoarea din coloana "Order identification no." din exportul PS
+	    - valoarea din coloana "Click Tag" in cazul 2p.
+	
 	 * */
 	
 	public function Parser2Performant() {
@@ -134,15 +139,17 @@ class SalesImport
 			}
 			
 			//ID,Program,Program Status,Affiliate,Commission type,Commission Amount (EUR),Commission Amount (RON),Status,Sale Amount (EUR),Sale Amount (RON),Description,Transaction Date,Transaction IP,Click Date,Click IP,Click Referrer,Click Redirect,Device Type,Click Tag,Initial Commission Amount,Comments
-			
-			$row = [
+            //2720918,lensa.ro,active,Daniela Vaduva,lead,3.16,15.0,accepted,"","",Programare_consultatie,2019-10-01 01:38:27 UTC,86.126.30.0,2019-09-26 23:17:02 UTC,188.25.227.0,https://www.google.com/,http://lensa.ro/?utm_source=2parale&utm_medium=quicklink&utm_campaign=daf68ddfd,Tablet,Cj0KCQjww7HsBRDkARIsAARsIT5ZJKfwyRAsExDTmxbyexLAyboLF3xw8DU2CWz2lGydDw3tpo0uW4gaAnKfEALw_wcB,3.16,
+            //2721411,libris.ro ,active,Daniela Vaduva,sale,1.0,4.74,accepted,11.81,56.1,"100 de lucruri despre stiinta - Alex Frith, Minna Lacey x1| Taraboi in gradina de zarzavaturi - Sven Nordqvist x1| ",2019-10-01 06:51:31 UTC,93.122.249.0,2019-09-07 14:42:28 UTC,79.114.35.0,https://www.google.com/,https://www.libris.ro?utm_source=2parale&utm_medium=quicklink&utm_campaign=daf68ddfd&utm_content=https://www.google.com/,Mobile,Cj0KCQjwqs3rBRCdARIsADe1pfTJk53CfvwT2158Y52RmCgz5CbDSnK-fetOTVTK4kkwMdmUQa5NhGgaAtynEALw_wcB,1.18,
+            
+            $row = [
 				'platform'          => '2Performant',
 				'platform_id'       => $columns[0],
 				'advertiser'        => strtolower($columns[1]),
 				'click_date'        => $this->utc_to_datetime($columns[13]),
 				'conversion_date'   => $this->utc_to_datetime($columns[11]),
 				'amount'            => $columns[6],
-				'referrer'          => $columns[15],
+                'referrer'          => preg_match('/gclid=(.*)/', $columns[15]) ? $columns[15] : $columns[18],
 				'original_status'   => $columns[7],
 				'status'            => $this->get_status($columns[7]),
 			];
@@ -179,7 +186,7 @@ class SalesImport
                     'click_date'        => $columns[3],
                     'conversion_date'   => $columns[2],
                     'amount'            => $columns[10] == 'Aprobat' ? $columns[7] : $columns[8],
-                    'referrer'          => $columns[11],
+                    'referrer'          => preg_match('/gclid=(.*)/', $columns[11]) ? $columns[11] : $columns[11],
                     'original_status'   => $columns[10],
                     'status'            => $this->get_status($columns[10]),
                 ];
@@ -189,10 +196,13 @@ class SalesImport
             
             if ($columns[15] == 'link') {
                 //v2
-                //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
+                //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare",            "Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name"
                 //Aloshop.tv,C7LP-996715510,"2017-11-06 19:18:40","2017-11-06 19:02:18","In asteptare","2017-11-13 15:14:22","Comision comanda",1,0.00,0,23.02,209.24,Anulate,http://pmark.ro/aloshop/https://aloshop.tv/sanatate-si-frumusete/vitarid-r?gclid=Cj0KCQiArYDQBRDoARIsAMR8s_QLhS2YlPjfnpZNScINjbmxMoldxp4irgEeleyEkCUzcoHZNSMK1akaAk3zEALw_wcB,"0 zile",link,AloShop.tv,desktop,Windows,7,,,Chrome
-                //Aloshop.tv,C7LP-996735702,"2017-11-25 08:00:37","2017-11-24 08:21:20","2017-12-06 18:30:05","2017-12-06 18:30:05","Comision comanda",1,23.02,0,23.02,209.24,Aprobate,http://pmark.ro/aloshop/https://aloshop.tv/sanatate-si-frumusete/vitarid-r?gclid=Cj0KCQiAgNrQBRC0ARIsAE-m-1xIpPV_wWGyIZwmgdDq7sJpk2CPPn_q_1DAxlsUK1Tk0qalZhF2qcEaApfHEALw_wcB,"1 zi",link,AloShop.tv,mobile,Android,6.0,Sony,"Xperia Z2","Chrome Mobile"
+                //Aloshop.tv,C7LP-996735702,"2017-11-25 08:00:37","2017-11-24 08:21:20","2017-12-06 18:30:05","2017-12-06 18:30:05","Comision comanda",1,23.02,0,23.02,209.24,       Aprobate,http://pmark.ro/aloshop/https://aloshop.tv/sanatate-si-frumusete/vitarid-r?gclid=Cj0KCQiAgNrQBRC0ARIsAE-m-1xIpPV_wWGyIZwmgdDq7sJpk2CPPn_q_1DAxlsUK1Tk0qalZhF2qcEaApfHEALw_wcB,"1 zi",link,AloShop.tv,mobile,Android,6.0,Sony,"Xperia Z2","Chrome Mobile"
     
+                //v3
+                //Advertiser,"Nr. Identificare Comanda","Data Ora Comanda","Data Ora Click","Data Blocare","Last update","Tip comision","Cantitate produse","Valoarea Comision Aprobat","Valoarea Comision Asteptare","Valoarea Comision Inregistrat","Valoare Vanzare",Status,Refferer/Cautare,"Perioada de decizie","Tip instrument","Instrument de promovare","Adresa IP","Device Type","Device Name","Device Version","Device Brand","Device Model","Browser Name","Identificator comanda"
+                //Libris.ro,C7LP-1000989795,"2019-09-10 19:37:54","2019-08-17 13:27:01","2019-09-30 05:30:20","2019-09-30 05:30:20","Comision comanda",61,106.43,0,106.43,"1,330.35",Aprobate,"Google: ","24 zile",link,Libris.ro,86.125.99.***,desktop,Windows,7,,,Firefox,EAIaIQobChMIxrSt39iJ5AIVh-NkCh0algl8EAAYAiAAEgKSjfD_BwE
     
                 $row = [
                     'platform'          => 'ProfitShare',
@@ -201,7 +211,7 @@ class SalesImport
                     'click_date'        => $columns[3],
                     'conversion_date'   => $columns[2],
                     'amount'            => $columns[12] == 'Aprobate' ? $columns[8] : ('Anulate' ? $columns[10] : $columns[9]),
-                    'referrer'          => $columns[13],
+                    'referrer'          => preg_match('/gclid=(.*)/', $columns[13]) ? $columns[13] : $columns[24],
 	                'original_status'   => $columns[12],
 	                'status'            => $this->get_status($columns[12]),
                 ];

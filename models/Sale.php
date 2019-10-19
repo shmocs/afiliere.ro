@@ -85,7 +85,7 @@ class Sale extends \yii\db\ActiveRecord
 				'attribute' => 'conversion_date',
                 'header' => 'Conversion Time',
 				'value' => function ($model, $key, $index, $widget) {
-					$utc_date = gmdate('Y-m-d H:i:s', strtotime($model->conversion_date)) . ' UTC';
+					$utc_date = gmdate('Y-m-d H:i:s', strtotime($model->conversion_date)) . '';
 					return $utc_date;
 				},
 			],
