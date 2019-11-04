@@ -20,6 +20,8 @@ class SalesController extends Controller
      */
     public function actionIndex()
     {
+        ini_set('memory_limit', '512M');
+
 	    $searchModel = new Sale();
 	
 	    $params = Yii::$app->request->get();
